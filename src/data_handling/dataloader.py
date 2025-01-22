@@ -28,7 +28,7 @@ class DataLoader:
         """
         Downloads all data from Google Drive.
         """
-        url = "https://drive.google.com/drive/folders/1mPNd7M4s_LPvGGIKP3-2HyiSVUAe5cbl"
+        url = "https://drive.google.com/drive/folders/1XDQmvYwXSjqXgLu6wZjbxR8ugCSi3Sy5"
         output = os.path.join(PROJECT_PATH, 'data')
         gdown.download_folder(url=url, output=output)
 
