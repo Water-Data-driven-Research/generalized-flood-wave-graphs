@@ -36,17 +36,21 @@ class DataLoader:
         """
         Reads downloaded data from the data folder and saves them in member variables.
         """
+        time_series_file_name = 'time_series_data.csv'
+        meta_file_name = 'meta_data.csv'
+        river_connections_file_name = 'river_connections.json'
+
         self.time_series_data = pd.read_csv(
-            os.path.join(PROJECT_PATH, 'data', 'time_series_data.csv'),
+            os.path.join(PROJECT_PATH, 'data', time_series_file_name),
             index_col=[0]
         )
 
         self.meta_data = pd.read_csv(
-            os.path.join(PROJECT_PATH, 'data', 'meta_data.csv'),
+            os.path.join(PROJECT_PATH, 'data', meta_file_name),
             index_col=[5]
         )
 
         with open(
-                os.path.join(PROJECT_PATH, 'data', 'river_connections.json')
+                os.path.join(PROJECT_PATH, 'data', river_connections_file_name)
         ) as f:
             self.river_connections = json.load(f)
