@@ -29,7 +29,7 @@ class DataLoader:
         if self.put_data_folder_inside_project_folder:
             self.data_folder_path = os.path.join(PROJECT_PATH, 'data')
         else:
-            self.data_folder_path = '../../data'
+            self.data_folder_path = '../data'
 
         if self.do_download:
             self.download_data()
