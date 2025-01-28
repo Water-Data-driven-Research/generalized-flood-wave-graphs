@@ -6,4 +6,4 @@ The packages used during development, along with their appropriate version numbe
 
 Google Drive folder containing all necessary data: https://drive.google.com/drive/folders/1mPNd7M4s_LPvGGIKP3-2HyiSVUAe5cbl
 
-Google Colab notebook: https://colab.research.google.com/drive/1wZI8ghCO4QsKtMP0atuXpFb8DS6p8TcL#scrollTo=eb700a01-4f52-4001-8adf-db69d3fb74dc
+Google Colab notebook: https://colab.research.google.com/drive/1wZI8ghCO4QsKtMP0atuXpFb8DS6p8TcL?usp=drive_link
