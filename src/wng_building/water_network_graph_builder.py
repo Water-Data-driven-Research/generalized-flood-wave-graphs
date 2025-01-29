@@ -15,7 +15,8 @@ class WaterNetworkGraphBuilder:
         self.station_river_creator.run()
 
         vertices = self.get_vertices()
-        self.get_river_graph(vertices=vertices)
+        self.get_rivers_graph(vertices=vertices)
+        self.get_water_network_graph(vertices=vertices)
 
     def get_vertices(self) -> list:
         vertices = list(self.station_river_creator.stations.keys())
@@ -28,7 +29,7 @@ class WaterNetworkGraphBuilder:
 
         return vertices
 
-    def get_river_graph(self, vertices: list) -> None:
+    def get_rivers_graph(self, vertices: list) -> None:
         edges = []
         for river in list(self.station_river_creator.rivers.values()):
             edges = edges + list(zip(river, river[1:]))
@@ -37,4 +38,15 @@ class WaterNetworkGraphBuilder:
             vertices=vertices, edges=edges,
             data_folder_path=self.dl.data_folder_path,
             file_name='rivers'
+        )
+
+    def get_water_network_graph(self, vertices: list) -> None:
+        edges = []
+        for river in list(self.station_river_creator.completed_rivers.values()):
+            edges = edges + list(zip(river, river[1:]))
+
+        GeneratedDataHandler.save_pickle(
+            vertices=vertices, edges=edges,
+            data_folder_path=self.dl.data_folder_path,
+            file_name='water_network_graph'
         )
