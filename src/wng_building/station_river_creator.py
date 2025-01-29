@@ -12,6 +12,8 @@ class StationRiverCreator:
         self.completed_rivers = None
 
     def run(self):
+        self.data_handler.run()
+
         self.stations = self.create_stations()
 
         self.rivers = self.create_rivers()
