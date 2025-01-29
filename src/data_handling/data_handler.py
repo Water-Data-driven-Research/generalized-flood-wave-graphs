@@ -7,6 +7,7 @@ class DataHandler:
     """
     Class for collecting and handling all downloaded data.
     """
+
     def __init__(self, dl: DataLoader):
         """
         Constructor. We create the following data structures.
@@ -35,6 +36,15 @@ class DataHandler:
         """
         self.dl = dl
 
+        self.time_series_data = None
+        self.reg_station_mapping = None
+        self.station_reg_mapping = None
+        self.station_coordinates = None
+        self.river_station_mapping = None
+        self.station_river_mapping = None
+        self.river_connections = None
+
+    def run(self):
         self.time_series_data = self.dl.time_series_data.astype(pd.Int64Dtype())
         self.reg_station_mapping = dict(self.dl.meta_data['station_name'])
         self.station_reg_mapping = {v: k for k, v in self.reg_station_mapping.items()}
@@ -69,7 +79,7 @@ class DataHandler:
         for river_name in river_names_without_duplicates:
             select_river = self.dl.meta_data[
                 self.dl.meta_data['river'] == river_name
-            ]
+                ]
             station_names_along_river = list(select_river.station_name.values)
 
             river_station_mapping[river_name] = station_names_along_river
