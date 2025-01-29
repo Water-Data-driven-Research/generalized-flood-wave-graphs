@@ -19,7 +19,8 @@ class DataHandler:
         - station_coordinates: Dictionary: keys are station reg-numbers, values are dictionaries
         like {'EOVx': 101317.2, 'EOVy': 735218.1, 'null_point': 73.7} (for Szeged)
 
-        - river_names: List containing all river names.
+        - rivers_unsorted: Dictionary: keys are river names and values are lists of station names
+        lying along the river
 
         - river_connections: Dictionary: keys are river names, values are dictionaries
         like {"close_beginning": 0, "close_ending": 2275} (if the river has to be closed
@@ -32,7 +33,7 @@ class DataHandler:
         self.time_series_data = self.dl.time_series_data.astype(pd.Int64Dtype())
         self.station_names = dict(self.dl.meta_data['station_name'])
         self.station_coordinates = self.get_station_coordinates()
-        self.river_names = self.get_river_names()
+        self.rivers_unsorted = self.get_rivers_unsorted()
         self.river_connections = self.dl.river_connections
 
     def get_station_coordinates(self) -> dict:
@@ -46,10 +47,10 @@ class DataHandler:
 
         return station_coordinates_dict
 
-    def get_river_names(self) -> list:
+    def get_rivers_unsorted(self) -> dict:
         """
-        Creates the river_names list described in the constructor.
-        :return list: list containing the river names
+        Creates the rivers_unsorted dictionary described in the constructor.
+        :return dict: rivers_unsorted
         """
         all_river_names = self.dl.meta_data['river'].values
 
@@ -57,4 +58,13 @@ class DataHandler:
             dict.fromkeys(all_river_names)
         )
 
-        return river_names_without_duplicates
+        rivers_unsorted = {}
+        for river_name in river_names_without_duplicates:
+            select_river = self.dl.meta_data[
+                self.dl.meta_data['river'] == river_name
+            ]
+            station_names_along_river = list(select_river.station_name.values)
+
+            rivers_unsorted[river_name] = station_names_along_river
+
+        return rivers_unsorted
