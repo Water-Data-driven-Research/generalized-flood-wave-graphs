@@ -82,7 +82,7 @@ class DataHandler:
         :return dict: station_river_mapping
         """
         station_river_mapping = {}
-        for station_name in self.reg_station_mapping:
+        for station_name in list(self.reg_station_mapping.values()):
             for river_name in list(self.river_station_mapping.keys()):
                 if station_name in self.river_station_mapping[river_name]:
                     station_river_mapping[station_name] = river_name
