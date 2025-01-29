@@ -14,13 +14,15 @@ class DataHandler:
         - time_series_data: Pandas DataFrame containing all water level time series data. The
         indices are dates and the column names are station reg-numbers.
 
-        - station_names: Dictionary: keys are station reg-numbers, values are station names
+        - reg_station_mapping: Dictionary: keys are station reg-numbers, values are station names
+
+        - station_reg_mapping: Dictionary: keys are station names, values are station reg-numbers
 
         - station_coordinates: Dictionary: keys are station reg-numbers, values are dictionaries
         like {'EOVx': 101317.2, 'EOVy': 735218.1, 'null_point': 73.7} (for Szeged)
 
-        - rivers_unsorted: Dictionary: keys are river names and values are lists of station names
-        lying along the river
+        - rivers_station_mapping: Dictionary: keys are river names and values are lists of station
+        names lying along the river
 
         - station_river_mapping: Dictionary: keys are station names and values are the corresponding
         river names
@@ -34,9 +36,10 @@ class DataHandler:
         self.dl = dl
 
         self.time_series_data = self.dl.time_series_data.astype(pd.Int64Dtype())
-        self.station_names = dict(self.dl.meta_data['station_name'])
+        self.reg_station_mapping = dict(self.dl.meta_data['station_name'])
+        self.station_reg_mapping = {v: k for k, v in self.reg_station_mapping.items()}
         self.station_coordinates = self.get_station_coordinates()
-        self.rivers_unsorted = self.get_rivers_unsorted()
+        self.river_station_mapping = self.get_river_station_mapping()
         self.station_river_mapping = self.get_station_river_mapping()
         self.river_connections = self.dl.river_connections
 
@@ -51,10 +54,10 @@ class DataHandler:
 
         return station_coordinates_dict
 
-    def get_rivers_unsorted(self) -> dict:
+    def get_river_station_mapping(self) -> dict:
         """
-        Creates the rivers_unsorted dictionary described in the constructor.
-        :return dict: rivers_unsorted
+        Creates the river-station mapping dictionary described in the constructor.
+        :return dict: river-station mapping
         """
         all_river_names = self.dl.meta_data['river'].values
 
@@ -62,16 +65,16 @@ class DataHandler:
             dict.fromkeys(all_river_names)
         )
 
-        rivers_unsorted = {}
+        river_station_mapping = {}
         for river_name in river_names_without_duplicates:
             select_river = self.dl.meta_data[
                 self.dl.meta_data['river'] == river_name
             ]
             station_names_along_river = list(select_river.station_name.values)
 
-            rivers_unsorted[river_name] = station_names_along_river
+            river_station_mapping[river_name] = station_names_along_river
 
-        return rivers_unsorted
+        return river_station_mapping
 
     def get_station_river_mapping(self) -> dict:
         """
@@ -79,9 +82,9 @@ class DataHandler:
         :return dict: station_river_mapping
         """
         station_river_mapping = {}
-        for station_name in self.station_names:
-            for river_name in list(self.rivers_unsorted.keys()):
-                if station_name in self.rivers_unsorted[river_name]:
+        for station_name in list(self.reg_station_mapping.values()):
+            for river_name in list(self.river_station_mapping.keys()):
+                if station_name in self.river_station_mapping[river_name]:
                     station_river_mapping[station_name] = river_name
                     break
 
