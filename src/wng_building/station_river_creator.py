@@ -4,14 +4,24 @@ from src.data_handling.data_handler import DataHandler
 
 
 class StationRiverCreator:
+    """
+    Class for creating the following data structures: stations, rivers, completed rivers
+    """
     def __init__(self, data_handler: DataHandler):
+        """
+        Constructor.
+        :param DataHandler data_handler: a DataHandler instance
+        """
         self.data_handler = data_handler
 
         self.stations = None
         self.rivers = None
         self.completed_rivers = None
 
-    def run(self):
+    def run(self) -> None:
+        """
+        Run function. Gets stations, rivers and completed rivers.
+        """
         self.data_handler.run()
 
         self.stations = self.create_stations()
@@ -21,6 +31,18 @@ class StationRiverCreator:
         self.completed_rivers = self.create_completed_rivers()
 
     def create_stations(self) -> dict:
+        """
+        Function for creating the stations data structure.
+        stations is a dictionary with reg-number keys and dictionary values like
+        2275: {
+            'river_name': Tisza,
+            'station_name': 'Szeged',
+            'EOVy': 735218.1,
+            'EOVx': 101317.2,
+            'null_point': 73.70
+        }
+        :return dict: dictionary of all stations
+        """
         stations = {}
         for reg_num in list(self.data_handler.reg_station_mapping.keys()):
             station_name = self.data_handler.reg_station_mapping[reg_num]
@@ -37,11 +59,23 @@ class StationRiverCreator:
         return stations
 
     def create_rivers(self) -> dict:
+        """
+        Function for creating the rivers data structure. A river looks like
+        {'river_name': [station1, station2, ..., stationN]}, where the stations
+        inside the list are sorted in descending order by their null points.
+        :return dict: dictionary of all rivers
+        """
         rivers_unsorted = self.get_rivers_unsorted()
 
         return self.sort_rivers(rivers_unsorted=rivers_unsorted)
 
     def get_rivers_unsorted(self) -> dict:
+        """
+        Creates dictionary of dictionaries like
+        {'river_name': [station1, station2, ..., stationN]}, where the stations
+        inside the list are not sorted.
+        :return dict: dictionary of unsorted rivers
+        """
         rivers_unsorted = {}
         for river_name in list(self.data_handler.river_station_mapping.keys()):
             station_name_list = self.data_handler.river_station_mapping[river_name]
@@ -54,6 +88,11 @@ class StationRiverCreator:
         return rivers_unsorted
 
     def sort_rivers(self, rivers_unsorted: dict) -> dict:
+        """
+        Sorts stations in rivers in descending order by their null points
+        :param dict rivers_unsorted: dictionary of unsorted rivers
+        :return dict: dictionary of sorted rivers
+        """
         rivers_sorted = {}
         for river_name in list(rivers_unsorted.keys()):
             river_unsorted = rivers_unsorted[river_name]
@@ -67,6 +106,11 @@ class StationRiverCreator:
         return rivers_sorted
 
     def create_completed_rivers(self) -> dict:
+        """
+        Creates completed rivers. Uses river_connections to append the rivers with some
+        "completing" stations.
+        :return dict: dictionary of completed rivers
+        """
         completed_rivers = copy.deepcopy(self.rivers)
         for river_name in list(self.data_handler.river_connections.keys()):
             close_beginning = self.data_handler.river_connections[river_name]['close_beginning']
