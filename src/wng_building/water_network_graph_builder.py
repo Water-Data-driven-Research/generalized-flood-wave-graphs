@@ -4,7 +4,7 @@ import networkx as nx
 
 from src.data_handling.data_handler import DataHandler
 from src.data_handling.dataloader import DataLoader
-from src.data_handling.generated_data_handler import GeneratedDataHandler
+from src.data_handling.generated_dataloader import GeneratedDataLoader
 from src.wng_building.station_river_creator import StationRiverCreator
 
 
@@ -43,7 +43,7 @@ class WaterNetworkGraphBuilder:
         """
         vertices = list(self.station_river_creator.stations.keys())
 
-        GeneratedDataHandler.save_pickle(
+        GeneratedDataLoader.save_pickle(
             vertices=vertices, edges=[],
             generated_path=self.generated_path,
             folder_name='vertices',
@@ -59,7 +59,7 @@ class WaterNetworkGraphBuilder:
             river = self.station_river_creator.rivers[river_name]
             edges = list(zip(river, river[1:]))
 
-            GeneratedDataHandler.save_pickle(
+            GeneratedDataLoader.save_pickle(
                 vertices=[], edges=edges,
                 generated_path=self.generated_path,
                 folder_name='rivers',
@@ -75,7 +75,7 @@ class WaterNetworkGraphBuilder:
             river = self.station_river_creator.completed_rivers[river_name]
             edges = list(zip(river, river[1:]))
 
-            GeneratedDataHandler.save_pickle(
+            GeneratedDataLoader.save_pickle(
                 vertices=[], edges=edges,
                 generated_path=self.generated_path,
                 folder_name='completed_rivers',
@@ -89,7 +89,7 @@ class WaterNetworkGraphBuilder:
         """
         water_network_graph = nx.DiGraph()
         for river_name in list(self.station_river_creator.completed_rivers.keys()):
-            completed_river = GeneratedDataHandler.read_pickle(
+            completed_river = GeneratedDataLoader.read_pickle(
                 generated_path=self.generated_path,
                 folder_name='completed_rivers',
                 file_name=f'cl_{river_name}'
@@ -97,7 +97,7 @@ class WaterNetworkGraphBuilder:
 
             water_network_graph = nx.compose(water_network_graph, completed_river)
 
-        GeneratedDataHandler.save_pickle(
+        GeneratedDataLoader.save_pickle(
             graph=water_network_graph,
             generated_path=self.generated_path,
             folder_name='water_network_graph',

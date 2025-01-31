@@ -4,7 +4,7 @@ import pickle
 import networkx as nx
 
 
-class GeneratedDataHandler:
+class GeneratedDataLoader:
     """
     Class for writing and reading pickle files.
     """
