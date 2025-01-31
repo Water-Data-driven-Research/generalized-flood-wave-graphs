@@ -1,5 +1,6 @@
 import pandas as pd
 
+from src.data_handling.data_interface import DataInterface
 from src.data_handling.dataloader import DataLoader
 
 
@@ -34,42 +35,44 @@ class DataHandler:
 
         :param DataLoader dl: a DataLoader instance
         """
-        self.dl = dl
 
-        self.time_series_data = None
-        self.reg_station_mapping = None
-        self.station_reg_mapping = None
-        self.station_coordinates = None
-        self.river_station_mapping = None
-        self.station_river_mapping = None
-        self.river_connections = None
+        self.interface = DataInterface()
 
-    def run(self):
-        self.time_series_data = self.dl.time_series_data.astype(pd.Int64Dtype())
-        self.reg_station_mapping = dict(self.dl.meta_data['station_name'])
-        self.station_reg_mapping = {v: k for k, v in self.reg_station_mapping.items()}
-        self.station_coordinates = self.get_station_coordinates()
-        self.river_station_mapping = self.get_river_station_mapping()
-        self.station_river_mapping = self.get_station_river_mapping()
-        self.river_connections = self.dl.river_connections
+        self.run(dl=dl)
 
-    def get_station_coordinates(self) -> dict:
+    def run(self, dl: DataLoader) -> None:
+        """
+        Run function. Gets all data structures described in the constructor.
+        :param DataLoader dl: a DataLoader instance
+        """
+        self.interface.time_series_data = dl.time_series_data.astype(pd.Int64Dtype())
+        self.interface.reg_station_mapping = dict(dl.meta_data['station_name'])
+        self.interface.station_reg_mapping = \
+            {v: k for k, v in self.interface.reg_station_mapping.items()}
+        self.interface.station_coordinates = self.get_station_coordinates(dl=dl)
+        self.interface.river_station_mapping = self.get_river_station_mapping(dl=dl)
+        self.interface.station_river_mapping = self.get_station_river_mapping()
+        self.interface.river_connections = dl.river_connections
+
+    @staticmethod
+    def get_station_coordinates(dl: DataLoader) -> dict:
         """
         Creates the station_coordinates dictionary described in the constructor.
         :return dict: the station coordinates dictionary
         """
-        station_coordinates_df = self.dl.meta_data[['EOVx', 'EOVy', 'null_point']]
+        station_coordinates_df = dl.meta_data[['EOVx', 'EOVy', 'null_point']]
 
         station_coordinates_dict = station_coordinates_df.to_dict(orient='index')
 
         return station_coordinates_dict
 
-    def get_river_station_mapping(self) -> dict:
+    @staticmethod
+    def get_river_station_mapping(dl: DataLoader) -> dict:
         """
         Creates the river-station mapping dictionary described in the constructor.
         :return dict: river-station mapping
         """
-        all_river_names = self.dl.meta_data['river'].values
+        all_river_names = dl.meta_data['river'].values
 
         river_names_without_duplicates = list(
             dict.fromkeys(all_river_names)
@@ -77,8 +80,8 @@ class DataHandler:
 
         river_station_mapping = {}
         for river_name in river_names_without_duplicates:
-            select_river = self.dl.meta_data[
-                self.dl.meta_data['river'] == river_name
+            select_river = dl.meta_data[
+                dl.meta_data['river'] == river_name
                 ]
             station_names_along_river = list(select_river.station_name.values)
 
@@ -92,9 +95,9 @@ class DataHandler:
         :return dict: station_river_mapping
         """
         station_river_mapping = {}
-        for station_name in list(self.reg_station_mapping.values()):
-            for river_name in list(self.river_station_mapping.keys()):
-                if station_name in self.river_station_mapping[river_name]:
+        for station_name in list(self.interface.reg_station_mapping.values()):
+            for river_name in list(self.interface.river_station_mapping.keys()):
+                if station_name in self.interface.river_station_mapping[river_name]:
                     station_river_mapping[station_name] = river_name
                     break
 
