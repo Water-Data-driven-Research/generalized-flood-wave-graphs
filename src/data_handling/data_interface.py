@@ -15,6 +15,14 @@ class DataInterface:
         - 'station_river_mapping'
         - 'river_connections'
         """
+        self.time_series_data = None
+        self.reg_station_mapping = None
+        self.station_reg_mapping = None
+        self.station_coordinates = None
+        self.river_station_mapping = None
+        self.station_river_mapping = None
+        self.river_connections = None
+
         if data is not None:
             for key, value in data.items():
                 setattr(self, key, value)
