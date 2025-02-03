@@ -1,5 +1,3 @@
-import os
-
 import networkx as nx
 
 from src.data_handling.generated_dataloader import GeneratedDataLoader
@@ -23,7 +21,6 @@ class WaterNetworkGraphBuilder:
         self.station_river_if = station_river_if
         self.do_save_all = do_save_all
         self.data_folder_path = data_folder_path
-        self.generated_path = os.path.join(data_folder_path, 'generated')
 
         self.wng_if = WNGDataInterface()
 
@@ -110,7 +107,7 @@ class WaterNetworkGraphBuilder:
         # save vertices
         GeneratedDataLoader.save_pickle(
             vertices=self.wng_if.vertices, edges=[],
-            generated_path=self.generated_path,
+            data_folder_path=self.data_folder_path,
             folder_name='vertices',
             file_name='vertices'
         )
@@ -120,7 +117,7 @@ class WaterNetworkGraphBuilder:
             # save a river
             GeneratedDataLoader.save_pickle(
                 vertices=[], edges=self.wng_if.river_edges[river_name],
-                generated_path=self.generated_path,
+                data_folder_path=self.data_folder_path,
                 folder_name='rivers',
                 file_name=river_name
             )
@@ -128,7 +125,7 @@ class WaterNetworkGraphBuilder:
             # save a completed river
             GeneratedDataLoader.save_pickle(
                 vertices=[], edges=self.wng_if.completed_river_edges[river_name],
-                generated_path=self.generated_path,
+                data_folder_path=self.data_folder_path,
                 folder_name='completed_rivers',
                 file_name=f'cl_{river_name}'
             )
@@ -136,7 +133,7 @@ class WaterNetworkGraphBuilder:
         # save the WNG
         GeneratedDataLoader.save_pickle(
             graph=self.wng_if.water_network_graph,
-            generated_path=self.generated_path,
+            data_folder_path=self.data_folder_path,
             folder_name='water_network_graph',
             file_name='wng'
         )
