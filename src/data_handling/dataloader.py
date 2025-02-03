@@ -8,15 +8,11 @@ class DataLoader:
     """
     Class for loading all necessary data.
     """
-    def __init__(self,
-                 do_download: bool = False,
-                 data_folder_path: str = None):
+    def __init__(self, data_folder_path: str = None):
         """
         Constructor.
-        :param bool do_download: True if we wish to download data, False if we don't
         :param str data_folder_path: the location where we wish to place the data folder
         """
-        self.do_download = do_download
         self.data_folder_path = data_folder_path
 
         self.time_series_data = pd.DataFrame()
