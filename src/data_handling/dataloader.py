@@ -3,8 +3,6 @@ import os
 
 import pandas as pd
 
-from src.data_handling.data_downloader import DataDownloader
-
 
 class DataLoader:
     """
@@ -12,22 +10,16 @@ class DataLoader:
     """
     def __init__(self,
                  do_download: bool = False,
-                 folder_link: str = None,
                  data_folder_path: str = None):
         """
         Constructor.
         :param bool do_download: True if we wish to download data, False if we don't
-        :param str folder_link: The link of the folder containing all necessary data
         :param str data_folder_path: the location where we wish to place the data folder
         """
         self.do_download = do_download
+        self.data_folder_path = data_folder_path
 
         self.dataset_name = 'time_series_data'
-
-        self.ddl = DataDownloader(folder_link=folder_link, data_folder_path=data_folder_path)
-
-        if self.do_download:
-            self.ddl.download_data()
 
         self.time_series_data = None
         self.meta_data = None
@@ -43,16 +35,16 @@ class DataLoader:
         river_connections_file_name = 'river_connections.json'
 
         self.time_series_data = pd.read_csv(
-            os.path.join(self.ddl.data_folder_path, time_series_file_name),
+            os.path.join(self.data_folder_path, time_series_file_name),
             index_col=[0]
         )
 
         self.meta_data = pd.read_csv(
-            os.path.join(self.ddl.data_folder_path, meta_file_name),
+            os.path.join(self.data_folder_path, meta_file_name),
             index_col=[5]
         )
 
         with open(
-                os.path.join(self.ddl.data_folder_path, river_connections_file_name)
+                os.path.join(self.data_folder_path, river_connections_file_name)
         ) as f:
             self.river_connections = json.load(f)
