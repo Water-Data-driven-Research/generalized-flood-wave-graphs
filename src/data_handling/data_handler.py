@@ -36,7 +36,7 @@ class DataHandler:
         :param DataLoader dl: a DataLoader instance
         """
 
-        self.interface = DataInterface()
+        self.data_if = None
 
         self.run(dl=dl)
 
@@ -45,14 +45,17 @@ class DataHandler:
         Run function. Gets all data structures described in the constructor.
         :param DataLoader dl: a DataLoader instance
         """
-        self.interface.time_series_data = dl.time_series_data.astype(pd.Int64Dtype())
-        self.interface.reg_station_mapping = dict(dl.meta_data['station_name'])
-        self.interface.station_reg_mapping = \
-            {v: k for k, v in self.interface.reg_station_mapping.items()}
-        self.interface.station_coordinates = self.get_station_coordinates(dl=dl)
-        self.interface.river_station_mapping = self.get_river_station_mapping(dl=dl)
-        self.interface.station_river_mapping = self.get_station_river_mapping()
-        self.interface.river_connections = dl.river_connections
+        data = {
+            'time_series_data': dl.time_series_data.astype(pd.Int64Dtype()),
+            'reg_station_mapping': dict(dl.meta_data['station_name']),
+            'station_reg_mapping': {v: k for k, v in self.data_if.reg_station_mapping.items()},
+            'station_coordinates': self.get_station_coordinates(dl=dl),
+            'river_station_mapping': self.get_river_station_mapping(dl=dl),
+            'station_river_mapping': self.get_station_river_mapping(),
+            'river_connections': dl.river_connections
+        }
+
+        self.data_if = DataInterface(data=data)
 
     @staticmethod
     def get_station_coordinates(dl: DataLoader) -> dict:
@@ -95,9 +98,9 @@ class DataHandler:
         :return dict: station_river_mapping
         """
         station_river_mapping = {}
-        for station_name in list(self.interface.reg_station_mapping.values()):
-            for river_name in list(self.interface.river_station_mapping.keys()):
-                if station_name in self.interface.river_station_mapping[river_name]:
+        for station_name in list(self.data_if.reg_station_mapping.values()):
+            for river_name in list(self.data_if.river_station_mapping.keys()):
+                if station_name in self.data_if.river_station_mapping[river_name]:
                     station_river_mapping[station_name] = river_name
                     break
 
