@@ -21,9 +21,9 @@ class DataLoader:
 
         self.dataset_name = 'time_series_data'
 
-        self.time_series_data = None
-        self.meta_data = None
-        self.river_connections = None
+        self.time_series_data = pd.DataFrame()
+        self.meta_data = pd.DataFrame()
+        self.river_connections = dict()
         self.load_data()
 
     def load_data(self) -> None:
