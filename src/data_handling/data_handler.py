@@ -46,13 +46,17 @@ class DataHandler:
         :param DataLoader dl: a DataLoader instance
         """
         reg_station_mapping_dict = dict(dl.meta_data['station_name'])
+        river_station_mapping_dict = self.get_river_station_mapping(dl=dl)
         data = {
             'time_series_data': dl.time_series_data.astype(pd.Int64Dtype()),
             'reg_station_mapping': reg_station_mapping_dict,
             'station_reg_mapping': {v: k for k, v in reg_station_mapping_dict.items()},
             'station_coordinates': self.get_station_coordinates(dl=dl),
-            'river_station_mapping': self.get_river_station_mapping(dl=dl),
-            'station_river_mapping': self.get_station_river_mapping(),
+            'river_station_mapping': river_station_mapping_dict,
+            'station_river_mapping': self.get_station_river_mapping(
+                reg_station_mapping=reg_station_mapping_dict,
+                river_station_mapping=river_station_mapping_dict
+            ),
             'river_connections': dl.river_connections
         }
 
@@ -93,15 +97,19 @@ class DataHandler:
 
         return river_station_mapping
 
-    def get_station_river_mapping(self) -> dict:
+    def get_station_river_mapping(self,
+                                  reg_station_mapping: dict,
+                                  river_station_mapping: dict) -> dict:
         """
         Creates the station-river mapping described in the constructor.
+        :param dict reg_station_mapping: the dictionary of the reg-station mapping
+        :param dict river_station_mapping: the dictionary of the river-station mapping
         :return dict: station_river_mapping
         """
         station_river_mapping = {}
-        for station_name in list(self.data_if.reg_station_mapping.values()):
-            for river_name in list(self.data_if.river_station_mapping.keys()):
-                if station_name in self.data_if.river_station_mapping[river_name]:
+        for station_name in list(reg_station_mapping.values()):
+            for river_name in list(river_station_mapping.keys()):
+                if station_name in river_station_mapping[river_name]:
                     station_river_mapping[station_name] = river_name
                     break
 
