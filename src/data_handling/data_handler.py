@@ -45,10 +45,11 @@ class DataHandler:
         Run function. Gets all data structures described in the constructor.
         :param DataLoader dl: a DataLoader instance
         """
+        reg_station_mapping_dict = dict(dl.meta_data['station_name'])
         data = {
             'time_series_data': dl.time_series_data.astype(pd.Int64Dtype()),
-            'reg_station_mapping': dict(dl.meta_data['station_name']),
-            'station_reg_mapping': {v: k for k, v in self.data_if.reg_station_mapping.items()},
+            'reg_station_mapping': reg_station_mapping_dict,
+            'station_reg_mapping': {v: k for k, v in reg_station_mapping_dict.items()},
             'station_coordinates': self.get_station_coordinates(dl=dl),
             'river_station_mapping': self.get_river_station_mapping(dl=dl),
             'station_river_mapping': self.get_station_river_mapping(),
