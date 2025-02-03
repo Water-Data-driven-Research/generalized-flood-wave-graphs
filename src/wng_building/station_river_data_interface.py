@@ -6,6 +6,6 @@ class StationRiverDataInterface:
         """
         Constructor.
         """
-        self.stations = None
-        self.rivers = None
-        self.completed_rivers = None
+        self.stations = dict()
+        self.rivers = dict()
+        self.completed_rivers = dict()
