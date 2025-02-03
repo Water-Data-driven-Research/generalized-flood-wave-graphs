@@ -2,11 +2,9 @@ import os
 
 import networkx as nx
 
-from src.data_handling.data_handler import DataHandler
-from src.data_handling.dataloader import DataLoader
 from src.data_handling.generated_dataloader import GeneratedDataLoader
-from src.wng_building.station_river_creator import StationRiverCreator
 from src.wng_building.station_river_data_interface import StationRiverDataInterface
+from src.wng_building.wng_data_interface import WNGDataInterface
 
 
 class WaterNetworkGraphBuilder:
@@ -14,87 +12,95 @@ class WaterNetworkGraphBuilder:
     Class for building the Water Network Graph and saving important data structures
     along the way.
     """
-    def __init__(self, do_save_all: bool, data_folder_path: str):
+    def __init__(self, station_river_if: StationRiverDataInterface,
+                 do_save_all: bool, data_folder_path: str):
         """
         Constructor.
+        :param StationRiverDataInterface station_river_if: a StationRiverDataInterface instance
         :param bool do_save_all: whether to save all created data structures or not
         :param str data_folder_path: path of the data folder
         """
+        self.station_river_if = station_river_if
         self.do_save_all = do_save_all
         self.data_folder_path = data_folder_path
         self.generated_path = os.path.join(data_folder_path, 'generated')
 
-        self.station_river_if = StationRiverDataInterface()
-        self.vertices = []
-        self.river_edges = {}
-        self.completed_river_edges = {}
-        self.water_network_graph = nx.DiGraph()
+        self.wng_if = WNGDataInterface()
 
     def run(self) -> None:
         """
         Run function. Gets vertices, edges of rivers, edges of completed rivers, the WNG,
         and saves these data structures.
         """
-        dl = DataLoader(
-            data_folder_path=self.data_folder_path
-        )
+        completed_river_edges = self.create_completed_river_graphs()
+        data = {
+            'vertices': self.create_vertex_graph(),
+            'river_edges': self.create_river_graphs(),
+            'completed_river_edges': completed_river_edges,
+            'water_network_graph': self.create_water_network_graph(
+                completed_river_edges=completed_river_edges
+            )
+        }
 
-        data_handler = DataHandler(dl=dl)
-
-        station_river_creator = StationRiverCreator(
-            data_if=data_handler.data_if
-        )
-
-        station_river_creator.run()
-        self.station_river_if = station_river_creator.station_river_if
-
-        self.create_vertex_graph()
-        self.create_river_graphs()
-        self.create_completed_river_graphs()
-        self.create_water_network_graph()
+        self.wng_if = WNGDataInterface(data=data)
 
         if self.do_save_all:
             self.save_all()
 
-    def create_vertex_graph(self) -> None:
+    def create_vertex_graph(self) -> list:
         """
         Gets vertices (all station reg-numbers in a list).
+        :return list: vertices of the graph
         """
-        self.vertices = list(self.station_river_if.stations.keys())
+        return list(self.station_river_if.stations.keys())
 
-    def create_river_graphs(self) -> None:
+    def create_river_graphs(self) -> dict:
         """
         Gets the edges of rivers and puts them in a dictionary.
         """
+        river_edges = {}
         for river_name in list(self.station_river_if.rivers.keys()):
             river = self.station_river_if.rivers[river_name]
             edges = list(zip(river, river[1:]))
 
-            self.river_edges[river_name] = edges
+            river_edges[river_name] = edges
 
-    def create_completed_river_graphs(self) -> None:
+        return river_edges
+
+    def create_completed_river_graphs(self) -> dict:
         """
         Gets the edges of completed rivers and puts them in a dictionary.
+        :return dict: the edges of the completed rivers in a dictionary
         """
+        completed_river_edges = {}
         for river_name in list(self.station_river_if.completed_rivers.keys()):
             river = self.station_river_if.completed_rivers[river_name]
             edges = list(zip(river, river[1:]))
 
-            self.completed_river_edges[river_name] = edges
+            completed_river_edges[river_name] = edges
 
-    def create_water_network_graph(self) -> None:
+        return completed_river_edges
+
+    @staticmethod
+    def create_water_network_graph(completed_river_edges: dict) -> nx.DiGraph:
         """
         Takes the union of the graphs of completed rivers to get the WNG.
+        :param dict completed_river_edges: dictionary containing the edges of the
+        completed rivers
+        :return nx.DiGraph: the WNG
         """
-        for river_name in list(self.completed_river_edges.keys()):
+        water_network_graph = nx.DiGraph()
+        for river_name in list(completed_river_edges.keys()):
             completed_river_graph = nx.DiGraph()
             completed_river_graph.add_edges_from(
-                self.completed_river_edges[river_name]
+                completed_river_edges[river_name]
             )
 
-            self.water_network_graph = nx.compose(
-                self.water_network_graph, completed_river_graph
+            water_network_graph = nx.compose(
+                water_network_graph, completed_river_graph
             )
+
+        return water_network_graph
 
     def save_all(self) -> None:
         """
@@ -103,17 +109,17 @@ class WaterNetworkGraphBuilder:
         """
         # save vertices
         GeneratedDataLoader.save_pickle(
-            vertices=self.vertices, edges=[],
+            vertices=self.wng_if.vertices, edges=[],
             generated_path=self.generated_path,
             folder_name='vertices',
             file_name='vertices'
         )
 
         # save rivers and completed rivers individually
-        for river_name in list(self.river_edges.keys()):
+        for river_name in list(self.wng_if.river_edges.keys()):
             # save a river
             GeneratedDataLoader.save_pickle(
-                vertices=[], edges=self.river_edges[river_name],
+                vertices=[], edges=self.wng_if.river_edges[river_name],
                 generated_path=self.generated_path,
                 folder_name='rivers',
                 file_name=river_name
@@ -121,7 +127,7 @@ class WaterNetworkGraphBuilder:
 
             # save a completed river
             GeneratedDataLoader.save_pickle(
-                vertices=[], edges=self.completed_river_edges[river_name],
+                vertices=[], edges=self.wng_if.completed_river_edges[river_name],
                 generated_path=self.generated_path,
                 folder_name='completed_rivers',
                 file_name=f'cl_{river_name}'
@@ -129,7 +135,7 @@ class WaterNetworkGraphBuilder:
 
         # save the WNG
         GeneratedDataLoader.save_pickle(
-            graph=self.water_network_graph,
+            graph=self.wng_if.water_network_graph,
             generated_path=self.generated_path,
             folder_name='water_network_graph',
             file_name='wng'
