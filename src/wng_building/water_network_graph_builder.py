@@ -1,11 +1,10 @@
-import os
-
 import networkx as nx
 
 from src.data_handling.data_handler import DataHandler
 from src.data_handling.dataloader import DataLoader
 from src.data_handling.generated_dataloader import GeneratedDataLoader
 from src.wng_building.station_river_creator import StationRiverCreator
+from src.wng_building.station_river_data_interface import StationRiverDataInterface
 
 
 class WaterNetworkGraphBuilder:
@@ -13,36 +12,33 @@ class WaterNetworkGraphBuilder:
     Class for building the Water Network Graph and saving important data structures
     along the way.
     """
-    def __init__(self, dl: DataLoader, do_save_all: bool):
+    def __init__(self, do_save_all: bool, generated_path: str):
         """
         Constructor.
-        :param DataLoader dl: a DataLoader instance
         :param bool do_save_all: whether to save all created data structures or not
         """
-        self.dl = dl
         self.do_save_all = do_save_all
+        self.generated_path = generated_path
 
-        self.data_handler = DataHandler(dl=self.dl)
-
-        self.station_river_creator = StationRiverCreator(
-            data_interface=self.data_handler.data_if
-        )
-
-        self.generated_path = os.path.join(self.dl.data_folder_path, 'generated')
-
-        self.data = None
+        self.river_if = StationRiverDataInterface()
         self.vertices = []
         self.river_edges = {}
         self.completed_river_edges = {}
         self.water_network_graph = nx.DiGraph()
 
-    def run(self) -> None:
+    def run(self, dl: DataLoader) -> None:
         """
         Run function. Gets vertices, edges of rivers, edges of completed rivers, the WNG,
         and saves these data structures.
         """
-        self.station_river_creator.run()
-        self.data = self.station_river_creator.interface
+        data_handler = DataHandler(dl=dl)
+
+        station_river_creator = StationRiverCreator(
+            data_interface=data_handler.data_if
+        )
+
+        station_river_creator.run()
+        self.river_if = station_river_creator.interface
 
         self.create_vertex_graph()
         self.create_river_graphs()
@@ -56,14 +52,14 @@ class WaterNetworkGraphBuilder:
         """
         Gets vertices (all station reg-numbers in a list).
         """
-        self.vertices = list(self.data.stations.keys())
+        self.vertices = list(self.river_if.stations.keys())
 
     def create_river_graphs(self) -> None:
         """
         Gets the edges of rivers and puts them in a dictionary.
         """
-        for river_name in list(self.data.rivers.keys()):
-            river = self.data.rivers[river_name]
+        for river_name in list(self.river_if.rivers.keys()):
+            river = self.river_if.rivers[river_name]
             edges = list(zip(river, river[1:]))
 
             self.river_edges[river_name] = edges
@@ -72,8 +68,8 @@ class WaterNetworkGraphBuilder:
         """
         Gets the edges of completed rivers and puts them in a dictionary.
         """
-        for river_name in list(self.data.completed_rivers.keys()):
-            river = self.data.completed_rivers[river_name]
+        for river_name in list(self.river_if.completed_rivers.keys()):
+            river = self.river_if.completed_rivers[river_name]
             edges = list(zip(river, river[1:]))
 
             self.completed_river_edges[river_name] = edges
