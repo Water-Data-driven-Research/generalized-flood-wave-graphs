@@ -36,7 +36,7 @@ class DataHandler:
         :param DataLoader dl: a DataLoader instance
         """
 
-        self.data_if = None
+        self.data_if = DataInterface()
 
         self.run(dl=dl)
 
