@@ -21,6 +21,8 @@ class DataDownloader:
         if self.data_folder_path is None:
             self.data_folder_path = os.path.join(PROJECT_PATH, 'data')
 
+        self.download_data()
+
     def download_data(self) -> None:
         """
         Downloads all data from Google Drive.
