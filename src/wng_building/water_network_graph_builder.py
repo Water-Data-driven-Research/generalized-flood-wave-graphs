@@ -25,10 +25,10 @@ class WaterNetworkGraphBuilder:
         self.data_handler = DataHandler(dl=self.dl)
 
         self.station_river_creator = StationRiverCreator(
-            data_interface=self.data_handler.interface
+            data_interface=self.data_handler.data_if
         )
 
-        self.generated_path = os.path.join(self.dl.ddl.data_folder_path, 'generated')
+        self.generated_path = os.path.join(self.dl.data_folder_path, 'generated')
 
         self.data = None
         self.vertices = []
