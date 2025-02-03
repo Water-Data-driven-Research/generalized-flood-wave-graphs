@@ -97,8 +97,8 @@ class DataHandler:
 
         return river_station_mapping
 
-    def get_station_river_mapping(self,
-                                  reg_station_mapping: dict,
+    @staticmethod
+    def get_station_river_mapping(reg_station_mapping: dict,
                                   river_station_mapping: dict) -> dict:
         """
         Creates the station-river mapping described in the constructor.
