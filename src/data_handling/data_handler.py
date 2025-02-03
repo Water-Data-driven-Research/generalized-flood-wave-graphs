@@ -36,7 +36,7 @@ class DataHandler:
         :param DataLoader dl: a DataLoader instance
         """
 
-        self.data_if = DataInterface()
+        self.data_if = None
 
         self.run(dl=dl)
 
@@ -45,14 +45,17 @@ class DataHandler:
         Run function. Gets all data structures described in the constructor.
         :param DataLoader dl: a DataLoader instance
         """
-        self.data_if.time_series_data = dl.time_series_data.astype(pd.Int64Dtype())
-        self.data_if.reg_station_mapping = dict(dl.meta_data['station_name'])
-        self.data_if.station_reg_mapping = \
-            {v: k for k, v in self.data_if.reg_station_mapping.items()}
-        self.data_if.station_coordinates = self.get_station_coordinates(dl=dl)
-        self.data_if.river_station_mapping = self.get_river_station_mapping(dl=dl)
-        self.data_if.station_river_mapping = self.get_station_river_mapping()
-        self.data_if.river_connections = dl.river_connections
+        data = {
+            'time_series_data': dl.time_series_data.astype(pd.Int64Dtype()),
+            'reg_station_mapping': dict(dl.meta_data['station_name']),
+            'station_reg_mapping': {v: k for k, v in self.data_if.reg_station_mapping.items()},
+            'station_coordinates': self.get_station_coordinates(dl=dl),
+            'river_station_mapping': self.get_river_station_mapping(dl=dl),
+            'station_river_mapping': self.get_station_river_mapping(),
+            'river_connections': dl.river_connections
+        }
+
+        self.data_if = DataInterface(data=data)
 
     @staticmethod
     def get_station_coordinates(dl: DataLoader) -> dict:
