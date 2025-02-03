@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 class DataInterface:
     """
     Class for storing data created in DataHandler.
@@ -15,13 +18,13 @@ class DataInterface:
         - 'station_river_mapping'
         - 'river_connections'
         """
-        self.time_series_data = None
-        self.reg_station_mapping = None
-        self.station_reg_mapping = None
-        self.station_coordinates = None
-        self.river_station_mapping = None
-        self.station_river_mapping = None
-        self.river_connections = None
+        self.time_series_data = pd.DataFrame()
+        self.reg_station_mapping = dict()
+        self.station_reg_mapping = dict()
+        self.station_coordinates = dict()
+        self.river_station_mapping = dict()
+        self.station_river_mapping = dict()
+        self.river_connections = dict()
 
         if data is not None:
             for key, value in data.items():
