@@ -19,8 +19,6 @@ class DataLoader:
         self.do_download = do_download
         self.data_folder_path = data_folder_path
 
-        self.dataset_name = 'time_series_data'
-
         self.time_series_data = pd.DataFrame()
         self.meta_data = pd.DataFrame()
         self.river_connections = dict()
