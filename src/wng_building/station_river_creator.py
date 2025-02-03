@@ -13,7 +13,7 @@ class StationRiverCreator:
         Constructor.
         :param DataInterface data_interface: a DataInterface instance
         """
-        self.data = data_interface
+        self.data_if = data_interface
 
         self.interface = StationRiverDataInterface()
 
@@ -41,16 +41,16 @@ class StationRiverCreator:
         }
         """
         stations = {}
-        for reg_num in list(self.data.reg_station_mapping.keys()):
-            station_name = self.data.reg_station_mapping[reg_num]
-            river_name = self.data.station_river_mapping[station_name]
+        for reg_num in list(self.data_if.reg_station_mapping.keys()):
+            station_name = self.data_if.reg_station_mapping[reg_num]
+            river_name = self.data_if.station_river_mapping[station_name]
 
             stations[reg_num] = {
                 'river_name': river_name,
                 'station_name': station_name,
-                'EOVy': self.data.station_coordinates[reg_num]['EOVy'],
-                'EOVx': self.data.station_coordinates[reg_num]['EOVx'],
-                'null_point': self.data.station_coordinates[reg_num]['null_point']
+                'EOVy': self.data_if.station_coordinates[reg_num]['EOVy'],
+                'EOVx': self.data_if.station_coordinates[reg_num]['EOVx'],
+                'null_point': self.data_if.station_coordinates[reg_num]['null_point']
             }
 
         self.interface.stations = stations
@@ -72,9 +72,9 @@ class StationRiverCreator:
         "completing" stations.
         """
         completed_rivers = copy.deepcopy(self.interface.rivers)
-        for river_name in list(self.data.river_connections.keys()):
-            close_beginning = self.data.river_connections[river_name]['close_beginning']
-            close_ending = self.data.river_connections[river_name]['close_ending']
+        for river_name in list(self.data_if.river_connections.keys()):
+            close_beginning = self.data_if.river_connections[river_name]['close_beginning']
+            close_ending = self.data_if.river_connections[river_name]['close_ending']
 
             if close_beginning is not None:
                 completed_rivers[river_name] = [close_beginning] + completed_rivers[river_name]
@@ -91,10 +91,10 @@ class StationRiverCreator:
         :return dict: dictionary of unsorted rivers
         """
         rivers_unsorted = {}
-        for river_name in list(self.data.river_station_mapping.keys()):
-            station_name_list = self.data.river_station_mapping[river_name]
+        for river_name in list(self.data_if.river_station_mapping.keys()):
+            station_name_list = self.data_if.river_station_mapping[river_name]
             reg_number_list = [
-                self.data.station_reg_mapping[station_name] for station_name in station_name_list
+                self.data_if.station_reg_mapping[station_name] for station_name in station_name_list
             ]
 
             rivers_unsorted[river_name] = reg_number_list
@@ -112,7 +112,7 @@ class StationRiverCreator:
             river_unsorted = rivers_unsorted[river_name]
             river_sorted = sorted(
                 river_unsorted,
-                key=lambda x: -self.data.station_coordinates[x]['null_point']
+                key=lambda x: -self.data_if.station_coordinates[x]['null_point']
             )
 
             rivers_sorted[river_name] = river_sorted
