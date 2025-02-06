@@ -18,10 +18,12 @@ class FloodWaveGraphPreparer:
 
     def run(self):
         delta_peak_bools = self.find_delta_peaks()
+        data = {
+            'delta_peaks': delta_peak_bools,
+            'edges': self.find_edges(delta_peak_bools=delta_peak_bools)
+        }
 
-        edges = self.find_edges(delta_peak_bools=delta_peak_bools)
-
-        self.preparer_if.edges = edges
+        self.preparer_if = FWGPreparerDataInterface(data=data)
 
     def find_delta_peaks(self) -> pd.DataFrame:
         peaks = pd.DataFrame(
