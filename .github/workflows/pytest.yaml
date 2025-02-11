@@ -1,34 +1,28 @@
-# The name of the workflow
 name: Pytest
-
-# Specifies the trigger for our workflow
 on: [push, pull_request]
 
 jobs:
-    test:
+  test:
+    runs-on: ubuntu-latest
 
-      # Creates environment/vm using the latest version of Ubuntu
-      runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-      steps:
-        # An action that checks out our repository into the environment
-        - uses: actions/checkout@v4
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-        # Sets up Python in our environment
-        - name: Set Up Python
-          uses: actions/setup-python@v5
-          with:
-            python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -U pytest
+          pip install -e .
 
-        - name: Install dependencies
-          # How we can run command line commands
-          run: |
-            python -m pip install --upgrade pip
-            pip install -r requirements.txt
-            pip install -U pytest
-            pip install -e .
+      - name: Debug Directory Structure
+        run: ls -R  # Check the directory structure before running tests
 
-        # Running Pytest!
-        - name: Test with pytest
-          run: |
-            python -m pytest
+      - name: Test with pytest
+        run: |
+          python -m pytest --rootdir=$(pwd)
