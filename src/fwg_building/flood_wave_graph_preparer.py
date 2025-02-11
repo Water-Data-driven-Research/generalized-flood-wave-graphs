@@ -54,9 +54,9 @@ class FloodWaveGraphPreparer:
         )
 
         for i in range(-self.delta, 0):
-            peaks = peaks * (self.time_series_data > self.time_series_data.shift(i))
-        for i in range(1, self.delta + 1):
             peaks = peaks * (self.time_series_data >= self.time_series_data.shift(i))
+        for i in range(1, self.delta + 1):
+            peaks = peaks * (self.time_series_data > self.time_series_data.shift(i))
 
         peaks.fillna(value=False, inplace=True)
 
