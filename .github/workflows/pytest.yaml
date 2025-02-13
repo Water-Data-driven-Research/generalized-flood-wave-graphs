@@ -1,8 +1,14 @@
 name: Pytest
-on: [push, pull_request]
+on:
+  pull_request_review:
+    branches:
+      - main
+    types:
+      - submitted
 
 jobs:
-  test:
+  approved:
+    if: github.event.review.state == 'APPROVED'
     runs-on: ubuntu-latest
 
     steps:
