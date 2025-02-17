@@ -1,7 +1,4 @@
-from typing import Any, Hashable
-
 import networkx as nx
-from networkx import Graph
 
 from src.data_handling.generated_dataloader import GeneratedDataLoader
 
@@ -48,11 +45,11 @@ class FWGSelectorBase:
         """
         self.fwg_subgraph = self.get_fwg_subgraph()
 
-    def get_fwg_subgraph(self) -> Graph[Hashable | Any]:
+    def get_fwg_subgraph(self) -> nx.DiGraph:
         """
         Gets the subgraph by keeping only those (reg_num, date) nodes for which reg_num is
         a node of the WNG and date is between start_date and end_date.
-        :return Graph[Hashable | Any]: the desired subgraph of the FWG
+        :return nx.DiGraph: the desired subgraph of the FWG
         """
         nodes_to_keep = []
         for node in self.fwg.nodes:
@@ -63,4 +60,6 @@ class FWGSelectorBase:
             if condition_one and condition_two:
                 nodes_to_keep.append(node)
 
-        return self.fwg.subgraph(nodes_to_keep).copy()
+        subgraph = self.fwg.subgraph(nodes_to_keep).copy()
+
+        return nx.DiGraph(subgraph)
