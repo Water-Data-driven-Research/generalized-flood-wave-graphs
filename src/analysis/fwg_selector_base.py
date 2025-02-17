@@ -3,7 +3,7 @@ import networkx as nx
 from src.data_handling.generated_dataloader import GeneratedDataLoader
 
 
-class FWGSelector:
+class FWGSelectorBase:
     """
     Class for spatial and temporal filtering of the Flood Wave Graph.
     """

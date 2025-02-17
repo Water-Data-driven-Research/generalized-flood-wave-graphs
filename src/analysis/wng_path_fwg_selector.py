@@ -1,9 +1,9 @@
 import networkx as nx
 
-from src.analysis.fwg_selector import FWGSelector
+from src.analysis.fwg_selector_base import FWGSelectorBase
 
 
-class WNGPathFWGSelector(FWGSelector):
+class WNGPathFWGSelector(FWGSelectorBase):
     def __init__(self, data_folder_path: str,
                  spatial_filtering: dict, temporal_filtering: dict,
                  fwg: nx.DiGraph = None, wng: nx.DiGraph = None):
