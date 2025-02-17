@@ -42,7 +42,7 @@ class FWGSelectorBase:
     def get_fwg_subgraph(self):
         nodes_to_keep = []
         for node in self.fwg.nodes:
-            condition_one = int(node[0]) in self.wng_subgraph.nodes
+            condition_one = node[0] in self.wng_subgraph.nodes
             condition_two = (
                     self.temporal_filtering['start_date'] <= node[1] <= self.temporal_filtering['end_date'])
 

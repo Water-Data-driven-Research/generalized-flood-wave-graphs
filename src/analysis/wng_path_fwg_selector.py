@@ -22,8 +22,8 @@ class WNGPathFWGSelector(FWGSelectorBase):
     def get_wng_path(self) -> nx.DiGraph:
         all_paths = list(nx.all_simple_paths(
             self.wng,
-            source=int(self.spatial_filtering['source']),
-            target=int(self.spatial_filtering['target'])
+            source=self.spatial_filtering['source'],
+            target=self.spatial_filtering['target']
         ))
 
         for path in all_paths:

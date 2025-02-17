@@ -71,7 +71,6 @@ class FloodWaveGraphPreparer:
         all_edges = []
         for completed_river_name in self.completed_rivers:
             completed_river = self.completed_rivers[completed_river_name]
-            completed_river = list(map(str, completed_river))
             peaks_along_completed_river = delta_peak_bools[completed_river]
 
             edges_along_completed_river = self.find_edges_along_completed_river(
