@@ -1,3 +1,5 @@
+import copy
+
 import networkx as nx
 
 from src.data_handling.generated_dataloader import GeneratedDataLoader
@@ -60,6 +62,13 @@ class FWGSelectorBase:
             if condition_one and condition_two:
                 nodes_to_keep.append(node)
 
-        subgraph = self.fwg.subgraph(nodes_to_keep).copy()
+        subgraph = nx.DiGraph(
+            copy.deepcopy(
+                self.fwg.subgraph(nodes_to_keep)
+            )
+        )
+        subgraph.remove_nodes_from(
+            list(nx.isolates(subgraph))
+        )
 
         return nx.DiGraph(subgraph)

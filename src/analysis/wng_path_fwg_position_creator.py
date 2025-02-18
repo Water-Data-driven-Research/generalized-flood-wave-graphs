@@ -53,6 +53,9 @@ class WNGPathFWGPositionCreator:
                 self.fwg_subgraph.subgraph(nodes_to_plot)
             )
         )
+        graph_to_plot.remove_nodes_from(
+            list(nx.isolates(graph_to_plot))
+        )
 
         return graph_to_plot
 
