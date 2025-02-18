@@ -33,11 +33,13 @@ class DataLoader:
             index_col=[0]
         )
         self.time_series_data.index = pd.to_datetime(self.time_series_data.index)
+        self.time_series_data.columns = self.time_series_data.columns.map(str)
 
         self.meta_data = pd.read_csv(
             os.path.join(self.data_folder_path, meta_file_name),
             index_col=[5]
         )
+        self.meta_data.index = self.meta_data.index.map(str)
 
         with open(
                 os.path.join(self.data_folder_path, river_connections_file_name)
