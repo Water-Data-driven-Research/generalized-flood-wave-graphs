@@ -38,16 +38,13 @@ class WNGPathFWGSelector(FWGSelectorBase):
         )
         self.spatial_filtering = spatial_filtering
 
-    def run(self) -> nx.DiGraph:
+    def run(self) -> None:
         """
         Run function. Gets the desired path in the WNG and then filters the FWG along this path.
-        :return nx.DiGraph: the filtered FWG
         """
         self.wng_subgraph = self.get_wng_path()
 
         super().run()
-
-        return self.fwg_subgraph
 
     def get_wng_path(self) -> nx.DiGraph:
         """
