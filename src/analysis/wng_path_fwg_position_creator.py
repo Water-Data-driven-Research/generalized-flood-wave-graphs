@@ -18,23 +18,23 @@ class WNGPathFWGPositionCreator:
         self.fwg_subgraph = fwg_subgraph
         self.reg_numbers = list(wng_path.nodes())
 
+        self.graph_to_plot = None
+        self.positions = None
+
     def run(self, start_date: str = None, end_date: str = None,
-            plot_all: bool = False) -> dict:
+            plot_all: bool = False):
         """
         Run function. Filters the graph between two dates if necessary and creates the positions.
         :param str start_date: start date of the plot
         :param str end_date: end date of the plot
         :param bool plot_all: whether to plot the whole graph or not
-        :return dict: the positions in a dictionary, keys are the nodes and values are
-        the positions
         """
         if not plot_all:
-            graph_to_plot = self.cut_graph(start_date=start_date, end_date=end_date)
+            self.graph_to_plot = self.cut_graph(start_date=start_date, end_date=end_date)
         else:
-            graph_to_plot = self.fwg_subgraph
+            self.graph_to_plot = self.fwg_subgraph
 
-        return self.create_positions(graph=graph_to_plot)
-
+        self.positions = self.create_positions(graph=self.graph_to_plot)
 
     def cut_graph(self, start_date: str, end_date: str) -> nx.DiGraph:
         """
@@ -64,7 +64,8 @@ class WNGPathFWGPositionCreator:
         :return dict: the positions in a dictionary, keys are the nodes and values are
         the positions
         """
-        min_date = min([node[1] for node in graph.nodes()])
+        min_date_temp = min([node[1] for node in graph.nodes()])
+        min_date = datetime.strptime(min_date_temp, '%Y-%m-%d')
 
         positions = dict()
         for node in graph.nodes():
