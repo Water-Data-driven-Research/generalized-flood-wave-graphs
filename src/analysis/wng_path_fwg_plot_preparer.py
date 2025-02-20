@@ -5,10 +5,9 @@ import networkx as nx
 from src.analysis.position_creator import PositionCreator
 
 
-class WNGPathFWGPositionCreator:
+class WNGPathFWGPlotPreparer:
     """
-    Class for creating the positions for plotting the Flood Wave Graph subgraph along a path
-    in the Water Network Graph.
+    Class for preparing the Flood Wave Graph subgraph for plotting.
     """
     def __init__(self, fwg_subgraph: nx.DiGraph, wng_path: nx.DiGraph):
         """
