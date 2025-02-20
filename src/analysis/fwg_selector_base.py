@@ -3,6 +3,8 @@ import copy
 import networkx as nx
 
 from src.data_handling.generated_dataloader import GeneratedDataLoader
+from src.fwg_building.fwg_data_interface import FWGDataInterface
+from src.wng_building.wng_data_interface import WNGDataInterface
 
 
 class FWGSelectorBase:
@@ -11,32 +13,18 @@ class FWGSelectorBase:
     """
     def __init__(self, temporal_filtering: dict,
                  data_folder_path: str,
-                 fwg: nx.DiGraph = None, wng: nx.DiGraph = None):
+                 fwg_data_if: FWGDataInterface, wng_data_if: WNGDataInterface):
         """
         Constructor.
         :param dict temporal_filtering: {'start_date': start_date, 'end_date': end_date}
         :param str data_folder_path: path of the data folder
-        :param nx.DiGraph fwg: the Flood Wave Graph
-        :param nx.DiGraph wng: the Water Network Graph
+        :param FWGDataInterface fwg_data_if: an FWGDataInterface instance
+        :param WNGDataInterface wng_data_if: a WNGDataInterface instance
         """
-        self.fwg = fwg
-        self.wng = wng
+        self.fwg = fwg_data_if.flood_wave_graph
+        self.wng = wng_data_if.water_network_graph
         self.data_folder_path = data_folder_path
         self.temporal_filtering = temporal_filtering
-
-        if self.fwg is None:
-            self.fwg = GeneratedDataLoader.read_pickle(
-                data_folder_path=self.data_folder_path,
-                folder_name='flood_wave_graph',
-                file_name='fwg'
-            )
-
-        if self.wng is None:
-            self.wng = GeneratedDataLoader.read_pickle(
-                data_folder_path=self.data_folder_path,
-                folder_name='water_network_graph',
-                file_name='wng'
-            )
 
         self.wng_subgraph = nx.DiGraph()
         self.fwg_subgraph = nx.DiGraph()
