@@ -22,7 +22,7 @@ def test_fwg_building():
     )
     fwg_builder.run()
 
-    fwg = fwg_builder.fwg_if.fwg
+    fwg = fwg_builder.fwg_if.flood_wave_graph
 
     expected_nodes = [('1111', '2000-01-06'), ('1111', '2000-01-10'), ('1111', '2000-01-13'),
                       ('2222', '2000-01-07'), ('2222', '2000-01-10'), ('2222', '2000-01-13')]
