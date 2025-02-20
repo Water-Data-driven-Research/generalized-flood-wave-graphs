@@ -3,16 +3,24 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
+from src.data_handling.data_interface import DataInterface
 from src.fwg_building.flood_wave_graph_builder import FloodWaveGraphBuilder
 from src.fwg_building.flood_wave_graph_preparer import FloodWaveGraphPreparer
+from src.wng_building.station_river_data_interface import StationRiverDataInterface
 
 
 def test_fwg_building():
     time_series_data, completed_rivers = create_example_data()
 
+    data_if = DataInterface()
+    data_if.time_series_data = time_series_data
+
+    station_river_data_if = StationRiverDataInterface()
+    station_river_data_if.completed_rivers = completed_rivers
+
     fwg_preparer = FloodWaveGraphPreparer(
-        time_series_data=time_series_data,
-        completed_rivers=completed_rivers,
+        data_if=data_if,
+        station_river_data_if=station_river_data_if,
         beta=3, delta=2
     )
     fwg_preparer.run()
@@ -22,7 +30,7 @@ def test_fwg_building():
     )
     fwg_builder.run()
 
-    fwg = fwg_builder.fwg_if.fwg
+    fwg = fwg_builder.fwg_if.flood_wave_graph
 
     expected_nodes = [('1111', '2000-01-06'), ('1111', '2000-01-10'), ('1111', '2000-01-13'),
                       ('2222', '2000-01-07'), ('2222', '2000-01-10'), ('2222', '2000-01-13')]
