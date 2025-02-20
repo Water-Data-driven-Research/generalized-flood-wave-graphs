@@ -1,7 +1,8 @@
 import copy
-from datetime import datetime
 
 import networkx as nx
+
+from src.analysis.position_creator import PositionCreator
 
 
 class WNGPathFWGPositionCreator:
@@ -12,29 +13,31 @@ class WNGPathFWGPositionCreator:
     def __init__(self, fwg_subgraph: nx.DiGraph, wng_path: nx.DiGraph):
         """
         Constructor.
-        :param x.DiGraph fwg_subgraph: the FWG subgraph along a path in the WNG
+        :param nx.DiGraph fwg_subgraph: the FWG subgraph along a path in the WNG
         :param x.DiGraph wng_path: the path in the WNG
         """
         self.fwg_subgraph = fwg_subgraph
         self.reg_numbers = list(wng_path.nodes())
 
-        self.graph_to_plot = None
-        self.positions = None
+        self.graph_to_plot = nx.DiGraph()
+        self.positions = dict()
 
-    def run(self, start_date: str = None, end_date: str = None,
-            plot_all: bool = False):
+    def run(self, start_date: str = None, end_date: str = None):
         """
         Run function. Filters the graph between two dates if necessary and creates the positions.
         :param str start_date: start date of the plot
         :param str end_date: end date of the plot
-        :param bool plot_all: whether to plot the whole graph or not
         """
-        if not plot_all:
+        if start_date is None and end_date is None:
+            self.graph_to_plot = self.fwg_subgraph
+        elif start_date is not None and end_date is not None:
             self.graph_to_plot = self.cut_graph(start_date=start_date, end_date=end_date)
         else:
-            self.graph_to_plot = self.fwg_subgraph
+            raise Exception('Either give a start date and an end date, or do not give either.')
 
-        self.positions = self.create_positions(graph=self.graph_to_plot)
+        self.positions = PositionCreator.create_positions(
+            graph=self.graph_to_plot, reg_numbers=self.reg_numbers
+        )
 
     def cut_graph(self, start_date: str, end_date: str) -> nx.DiGraph:
         """
@@ -58,22 +61,3 @@ class WNGPathFWGPositionCreator:
         )
 
         return graph_to_plot
-
-    def create_positions(self, graph: nx.DiGraph) -> dict:
-        """
-        Creates positions. x coordinates are dates with a frequency of 1 day, y coordinates
-        are reg-numbers in order
-        :param nx.DiGraph graph: graph to plot
-        :return dict: the positions in a dictionary, keys are the nodes and values are
-        the positions
-        """
-        min_date_temp = min([node[1] for node in graph.nodes()])
-        min_date = datetime.strptime(min_date_temp, '%Y-%m-%d')
-
-        positions = dict()
-        for node in graph.nodes():
-            x_coord = (datetime.strptime(node[1], '%Y-%m-%d') - min_date).days - 1
-            y_coord = len(self.reg_numbers) - self.reg_numbers.index(node[0])
-            positions[node] = (x_coord, y_coord)
-
-        return positions
