@@ -62,10 +62,10 @@ class WNGPathFWGSelector(FWGSelectorBase):
 
         for path in all_paths:
             if set(self.spatial_filtering['through']).issubset(path):
-                path_graph = nx.DiGraph()
-                path_graph.add_nodes_from(path)
+                path_graph = self.wng.subgraph(nodes=path)
+                path_graph_nx = nx.DiGraph(path_graph)
 
-                return path_graph
+                return path_graph_nx
 
         raise Exception('There is no path from the source to the target that goes through' 
                         'all given nodes.')
