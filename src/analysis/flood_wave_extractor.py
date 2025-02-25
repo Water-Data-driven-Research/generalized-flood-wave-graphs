@@ -33,10 +33,9 @@ class FloodWaveExtractor:
         else:
             self.get_flood_waves_without_equivalence()
 
-    def get_flood_waves(self):
+    def get_flood_waves(self) -> None:
         """
         This function returns the actual flood waves in the FWG with equivalence.
-        :return list: list of lists of the flood wave nodes
         """
         components = list(nx.weakly_connected_components(self.fwg))
 
@@ -46,9 +45,9 @@ class FloodWaveExtractor:
 
         waves = []
         for comp in components:
-            final_pairs = fw_handler.get_final_pairs(comp=list(comp))
+            possible_pairs = fw_handler.get_possible_pairs(comp=list(comp))
 
-            for start, end in final_pairs:
+            for start, end in possible_pairs:
                 try:
                     wave = nx.shortest_path(self.fwg, start, end)
                     waves.append(list(wave))
@@ -57,10 +56,9 @@ class FloodWaveExtractor:
 
         self.flood_waves = waves
 
-    def get_flood_waves_without_equivalence(self):
+    def get_flood_waves_without_equivalence(self) -> None:
         """
         This function returns the actual flood waves in the FWG without equivalence.
-        :return list: paths
         """
         components = list(nx.weakly_connected_components(self.fwg))
 
@@ -70,9 +68,9 @@ class FloodWaveExtractor:
 
         waves = []
         for comp in components:
-            final_pairs = fw_handler.get_final_pairs(comp=list(comp))
+            possible_pairs = fw_handler.get_possible_pairs(comp=list(comp))
 
-            for start, end in final_pairs:
+            for start, end in possible_pairs:
                 try:
                     wave = nx.all_shortest_paths(self.fwg, start, end)
                     waves.append(list(wave))

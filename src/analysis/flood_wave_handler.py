@@ -19,7 +19,7 @@ class FloodWaveHandler:
         self.wng = wng
         self.station_coordinates = station_coordinates
 
-    def get_final_pairs(self, comp: list) -> list:
+    def get_possible_pairs(self, comp: list) -> list:
         """
         Searches for possible starting and end nodes of flood waves in a connected component.
         :param list comp: the component
@@ -38,7 +38,7 @@ class FloodWaveHandler:
 
         cartesian_pairs = list(itertools.product(possible_start_nodes, possible_end_nodes))
 
-        final_pairs = []
+        possible_pairs = []
         for x, y in cartesian_pairs:
             x_reg_number = x[0]
             y_reg_number = y[0]
@@ -49,6 +49,6 @@ class FloodWaveHandler:
             ordering_is_valid = x_null_point > y_null_point
 
             if path_exists and ordering_is_valid:
-                final_pairs.append((x, y))
+                possible_pairs.append((x, y))
 
-        return final_pairs
+        return possible_pairs
