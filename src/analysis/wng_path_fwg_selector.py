@@ -1,6 +1,8 @@
 import networkx as nx
 
 from src.analysis.fwg_selector_base import FWGSelectorBase
+from src.fwg_building.fwg_data_interface import FWGDataInterface
+from src.wng_building.wng_data_interface import WNGDataInterface
 
 
 class WNGPathFWGSelector(FWGSelectorBase):
@@ -10,7 +12,7 @@ class WNGPathFWGSelector(FWGSelectorBase):
     """
     def __init__(self, data_folder_path: str,
                  spatial_filtering: dict, temporal_filtering: dict,
-                 fwg: nx.DiGraph = None, wng: nx.DiGraph = None):
+                 fwg_data_if: FWGDataInterface, wng_data_if: WNGDataInterface):
         """
         Constructor.
         :param str data_folder_path: path of the data folder
@@ -28,13 +30,13 @@ class WNGPathFWGSelector(FWGSelectorBase):
             'start_date': '2000-01-01',
             'end_date': '2000-02-01'
         }
-        :param nx.DiGraph fwg: the Flood Wave Graph
-        :param nx.DiGraph wng: the Water Network Graph
+        :param FWGDataInterface fwg_data_if: an FWGDataInterface instance
+        :param WNGDataInterface wng_data_if: a WNGDataInterface instance
         """
         super().__init__(
             temporal_filtering=temporal_filtering,
             data_folder_path=data_folder_path,
-            fwg=fwg, wng=wng
+            fwg_data_if=fwg_data_if, wng_data_if=wng_data_if
         )
         self.spatial_filtering = spatial_filtering
 
@@ -50,7 +52,7 @@ class WNGPathFWGSelector(FWGSelectorBase):
         """
         Gets the only path between spatial_filtering['source'] and spatial_filtering['target']
         that goes through all stations in spatial_filtering['through'].
-        :return nx.DiGraph: path of the WNG
+        :return nx.DiGraph: the found path
         """
         all_paths = list(nx.all_simple_paths(
             self.wng,

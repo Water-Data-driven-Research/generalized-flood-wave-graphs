@@ -2,7 +2,8 @@ import copy
 
 import networkx as nx
 
-from src.data_handling.generated_dataloader import GeneratedDataLoader
+from src.fwg_building.fwg_data_interface import FWGDataInterface
+from src.wng_building.wng_data_interface import WNGDataInterface
 
 
 class FWGSelectorBase:
@@ -11,32 +12,18 @@ class FWGSelectorBase:
     """
     def __init__(self, temporal_filtering: dict,
                  data_folder_path: str,
-                 fwg: nx.DiGraph = None, wng: nx.DiGraph = None):
+                 fwg_data_if: FWGDataInterface, wng_data_if: WNGDataInterface):
         """
         Constructor.
         :param dict temporal_filtering: {'start_date': start_date, 'end_date': end_date}
         :param str data_folder_path: path of the data folder
-        :param nx.DiGraph fwg: the Flood Wave Graph
-        :param nx.DiGraph wng: the Water Network Graph
+        :param FWGDataInterface fwg_data_if: an FWGDataInterface instance
+        :param WNGDataInterface wng_data_if: a WNGDataInterface instance
         """
-        self.fwg = fwg
-        self.wng = wng
+        self.fwg = fwg_data_if.flood_wave_graph
+        self.wng = wng_data_if.water_network_graph
         self.data_folder_path = data_folder_path
         self.temporal_filtering = temporal_filtering
-
-        if self.fwg is None:
-            self.fwg = GeneratedDataLoader.read_pickle(
-                data_folder_path=self.data_folder_path,
-                folder_name='flood_wave_graph',
-                file_name='fwg'
-            )
-
-        if self.wng is None:
-            self.wng = GeneratedDataLoader.read_pickle(
-                data_folder_path=self.data_folder_path,
-                folder_name='water_network_graph',
-                file_name='wng'
-            )
 
         self.wng_subgraph = nx.DiGraph()
         self.fwg_subgraph = nx.DiGraph()
@@ -45,21 +32,20 @@ class FWGSelectorBase:
         """
         Run function. Gets the desired subgraph of the FWG.
         """
-        self.fwg_subgraph = self.get_fwg_subgraph()
+        self.get_fwg_subgraph()
 
-    def get_fwg_subgraph(self) -> nx.DiGraph:
+    def get_fwg_subgraph(self):
         """
         Gets the subgraph by keeping only those (reg_num, date) nodes for which reg_num is
         a node of the WNG and date is between start_date and end_date.
-        :return nx.DiGraph: the desired subgraph of the FWG
         """
         nodes_to_keep = []
         for node in self.fwg.nodes:
-            condition_one = node[0] in self.wng_subgraph.nodes
-            condition_two = (
+            is_node_in_subgraph = node[0] in self.wng_subgraph.nodes
+            is_date_between_bounds = (
                     self.temporal_filtering['start_date'] <= node[1] <= self.temporal_filtering['end_date'])
 
-            if condition_one and condition_two:
+            if is_node_in_subgraph and is_date_between_bounds:
                 nodes_to_keep.append(node)
 
         subgraph = nx.DiGraph(
@@ -71,4 +57,4 @@ class FWGSelectorBase:
             list(nx.isolates(subgraph))
         )
 
-        return nx.DiGraph(subgraph)
+        self.fwg_subgraph = nx.DiGraph(subgraph)

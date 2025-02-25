@@ -27,7 +27,7 @@ class FloodWaveGraphBuilder:
         """
         Run function. Builds the Flood Wave Graph and saves it if needed.
         """
-        self.fwg_if.fwg = self.build_flood_wave_graph()
+        self.fwg_if.flood_wave_graph = self.build_flood_wave_graph()
 
         if self.do_save_fwg:
             self.save_fwg()
@@ -47,7 +47,7 @@ class FloodWaveGraphBuilder:
         Saves the Flood Wave Graph.
         """
         GeneratedDataLoader.save_pickle(
-            graph=self.fwg_if.fwg,
+            graph=self.fwg_if.flood_wave_graph,
             data_folder_path=self.data_folder_path,
             folder_name='flood_wave_graph',
             file_name='fwg'
