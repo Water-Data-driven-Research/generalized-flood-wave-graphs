@@ -7,18 +7,23 @@ class FloodWaveHandler:
     """
     This is a helper class for FloodWaveExtractor.
     """
-    def __init__(self, fwg: nx.DiGraph):
+    def __init__(self, fwg: nx.DiGraph, wng: nx.DiGraph,
+                 station_coordinates: dict):
         """
         Constructor.
-        :param nx.DiGraph fwg: the Flood Wave Graph
+        :param nx.DiGraph fwg: the filtered Flood Wave Graph
+        :param nx.DiGraph wng: the filtered Water Network Graph
+        :param dict station_coordinates: coordinates of each station in a dictionary
         """
         self.fwg = fwg
+        self.wng = wng
+        self.station_coordinates = station_coordinates
 
     def get_final_pairs(self, comp: list) -> list:
         """
-        Searches for end nodes of flood waves in a connected component
+        Searches for possible starting and end nodes of flood waves in a connected component.
         :param list comp: the component
-        :return list: list of start and end nodes of flood waves
+        :return list: list of tuples of possible start and end nodes
         """
         possible_start_nodes = []
         possible_end_nodes = []
@@ -33,9 +38,17 @@ class FloodWaveHandler:
 
         cartesian_pairs = list(itertools.product(possible_start_nodes, possible_end_nodes))
 
-        # condition_one: there is a path from x to y in the WNG
-        # condition_two: z(x) > z(y)
+        final_pairs = []
+        for x, y in cartesian_pairs:
+            x_reg_number = x[0]
+            y_reg_number = y[0]
+            x_null_point = self.station_coordinates[x_reg_number]['null_point']
+            y_null_point = self.station_coordinates[y_reg_number]['null_point']
 
-        final_pairs = [(x, y) for x, y in cartesian_pairs if condition_one and condition_two]
+            path_exists = nx.has_path(self.wng, x_reg_number, y_reg_number)
+            ordering_is_valid = x_null_point > y_null_point
+
+            if path_exists and ordering_is_valid:
+                final_pairs.append((x, y))
 
         return final_pairs
