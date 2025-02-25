@@ -4,8 +4,8 @@ from datetime import datetime
 class FloodWaveSelector:
 
     @staticmethod
-    def get_flood_waves_from_start_to_end(waves: list, impacted_stations: list,
-                                          equivalence: bool) -> list:
+    def get_flood_waves_by_impacted_stations(waves: list, impacted_stations: list,
+                                             equivalence: bool) -> list:
         """
         Selects only those flood waves that impacted all stations in impacted_stations.
         :param list waves: list of all the flood waves
