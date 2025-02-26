@@ -65,7 +65,7 @@ class WNGPathFWGSelector(FWGSelectorBase):
                 path_graph = self.wng.subgraph(nodes=path)
                 self.wng_subgraph = nx.DiGraph(path_graph)
 
-                break
+                return
 
         raise Exception('There is no path from the source to the target that goes through' 
                         'all given nodes.')
