@@ -3,26 +3,28 @@ from itertools import product
 
 import pandas as pd
 
+from src.data_handling.data_interface import DataInterface
 from src.fwg_building.fwg_preparer_data_interface import FWGPreparerDataInterface
+from src.wng_building.station_river_data_interface import StationRiverDataInterface
 
 
 class FloodWaveGraphPreparer:
     """
     Class for finding the nodes and edges of the Flood Wave Graph.
     """
-    def __init__(self, time_series_data: pd.DataFrame, completed_rivers: dict,
+    def __init__(self, data_if: DataInterface , station_river_data_if: StationRiverDataInterface,
                  beta: int, delta: int):
         """
         Constructor.
-        :param pd.DataFrame time_series_data: dataframe containing all water level time series
-        :param dict completed_rivers: dictionary containing all completed rivers
+        :param DataInterface data_if: a DataInterface instance
+        :param StationRiverDataInterface station_river_data_if: a StationRiverDataInterface instance
         :param int beta: hyperparameter for setting the maximal allowed time difference (in days)
         between two connected nodes
         :param int delta: hyperparameter for setting the lengths of the time intervals in which
         we are looking for a peak value
         """
-        self.time_series_data = time_series_data
-        self.completed_rivers = completed_rivers
+        self.time_series_data = data_if.time_series_data
+        self.completed_rivers = station_river_data_if.completed_rivers
         self.beta = beta
         self.delta = delta
 

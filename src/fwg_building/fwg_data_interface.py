@@ -9,4 +9,4 @@ class FWGDataInterface:
         """
         Constructor. The only member variable is fwg.
         """
-        self.fwg = nx.DiGraph()
+        self.flood_wave_graph = nx.DiGraph()
