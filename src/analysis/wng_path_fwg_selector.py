@@ -44,11 +44,11 @@ class WNGPathFWGSelector(FWGSelectorBase):
         """
         Run function. Gets the desired path in the WNG and then filters the FWG along this path.
         """
-        self.wng_subgraph = self.get_wng_path()
+        self.get_wng_path()
 
         super().run()
 
-    def get_wng_path(self) -> nx.DiGraph:
+    def get_wng_path(self):
         """
         Gets the only path between spatial_filtering['source'] and spatial_filtering['target']
         that goes through all stations in spatial_filtering['through'].
@@ -63,9 +63,9 @@ class WNGPathFWGSelector(FWGSelectorBase):
         for path in all_paths:
             if set(self.spatial_filtering['through']).issubset(path):
                 path_graph = self.wng.subgraph(nodes=path)
-                path_graph_nx = nx.DiGraph(path_graph)
+                self.wng_subgraph = nx.DiGraph(path_graph)
 
-                return path_graph_nx
+                break
 
         raise Exception('There is no path from the source to the target that goes through' 
                         'all given nodes.')
