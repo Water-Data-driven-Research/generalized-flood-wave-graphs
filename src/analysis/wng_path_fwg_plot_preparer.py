@@ -16,7 +16,7 @@ class WNGPathFWGPlotPreparer:
         :param x.DiGraph wng_path: the path in the WNG
         """
         self.fwg_subgraph = fwg_subgraph
-        self.reg_numbers = list(wng_path.nodes())
+        self.reg_numbers_in_order = nx.dag_longest_path(wng_path)
 
         self.graph_to_plot = nx.DiGraph()
         self.positions = dict()
@@ -35,7 +35,7 @@ class WNGPathFWGPlotPreparer:
             raise Exception('Either give a start date and an end date, or do not give either.')
 
         self.positions = PositionCreator.create_positions(
-            graph=self.graph_to_plot, reg_numbers=self.reg_numbers
+            graph=self.graph_to_plot, reg_numbers=self.reg_numbers_in_order
         )
 
     def cut_graph(self, start_date: str, end_date: str) -> nx.DiGraph:
