@@ -5,16 +5,16 @@ class FloodWaveSelector:
 
     @staticmethod
     def get_flood_waves_by_impacted_stations(waves: list, impacted_stations: list,
-                                             equivalence: bool) -> list:
+                                             is_equivalence_applied: bool) -> list:
         """
         Selects only those flood waves that impacted all stations in impacted_stations.
         :param list waves: list of all the flood waves
         :param list impacted_stations: stations the flood waves should go through
-        :param bool equivalence: True if we only consider one element of the equivalence
+        :param bool is_equivalence_applied: True if we only consider one element of the equivalence
         classes, False otherwise
         :return list: full flood waves
         """
-        if equivalence:
+        if is_equivalence_applied:
             final_waves = []
             for wave in waves:
                 stations_in_flood_wave = [wave[i][0] for i in range(len(wave))]
@@ -35,17 +35,17 @@ class FloodWaveSelector:
 
     @staticmethod
     def get_flood_waves_by_duration(waves: list, max_duration_days: int,
-                                    equivalence: bool) -> list:
+                                    is_equivalence_applied: bool) -> list:
         """
         Gets flood waves for which the time difference between the first and last nodes
         are at most max_duration_days.
         :param list waves: list of all the flood waves
         :param int max_duration_days: maximal allowed time duration of a flood wave
-        :param bool equivalence: True if we only consider one element of the equivalence
+        :param bool is_equivalence_applied: True if we only consider one element of the equivalence
         classes, False otherwise
-        :return:
+        :return: flood waves that lasted for at most max_duration_days days
         """
-        if equivalence:
+        if is_equivalence_applied:
             final_waves = []
             for wave in waves:
                 date1 = datetime.strptime(wave[0][1], "%Y-%m-%d")
