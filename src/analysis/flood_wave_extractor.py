@@ -1,8 +1,10 @@
 import itertools
+from datetime import datetime
 
 import networkx as nx
 
 from src.data_handling.data_interface import DataInterface
+from src.data_handling.generated_dataloader import GeneratedDataLoader
 
 
 class FloodWaveExtractor:
@@ -10,7 +12,8 @@ class FloodWaveExtractor:
     This class is responsible for extracting the flood waves from a given FWG
     """
     def __init__(self, fwg: nx.DiGraph, wng: nx.DiGraph,
-                 data_if: DataInterface, is_equivalence_applied: bool):
+                 data_if: DataInterface, is_equivalence_applied: bool,
+                 do_save_flood_waves: bool = False, data_folder_path: str = None):
         """
         Constructor.
         :param nx.DiGraph fwg: the filtered Flood Wave Graph
@@ -18,11 +21,15 @@ class FloodWaveExtractor:
         :param DataInterface data_if: a DataInterface instance
         :param bool is_equivalence_applied: True if we only consider one element of the equivalence
         classes, False otherwise
+        :param bool do_save_flood_waves: whether to save extracted flood waves or not
+        :param str data_folder_path: path of the data folder
         """
         self.fwg = fwg
         self.wng = wng
         self.station_coordinates = data_if.station_coordinates
         self.is_equivalence_applied = is_equivalence_applied
+        self.do_save_flood_waves = do_save_flood_waves
+        self.data_folder_path = data_folder_path
 
         self.flood_waves = []
 
@@ -31,6 +38,9 @@ class FloodWaveExtractor:
         Run function. Gets flood waves.
         """
         self.get_flood_waves()
+
+        if self.do_save_flood_waves:
+            self.save_flood_waves()
 
     def get_flood_waves(self) -> None:
         """
@@ -87,3 +97,28 @@ class FloodWaveExtractor:
                 possible_pairs.append((x, y))
 
         return possible_pairs
+
+    def save_flood_waves(self) -> None:
+        """
+        Function for saving the flood waves in a dictionary with three keys
+        - key 1: 'is_equivalence_applied' -> bool whether we applied equivalence or not
+        - key 2: 'stations' -> list of stations in the filtered WNG
+        - key 3: 'flood_waves' -> list of all flood waves
+        """
+        stations = list(self.wng.nodes())
+        extracted_flood_waves = {
+            'is_equivalence_applied': self.is_equivalence_applied,
+            'stations': stations,
+            'flood_waves': self.flood_waves
+        }
+
+        current_date_and_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+        subfolder_names = ['flood_waves', current_date_and_time]
+
+        GeneratedDataLoader.save_json(
+            data=extracted_flood_waves,
+            data_folder_path=self.data_folder_path,
+            subfolder_names=subfolder_names,
+            file_name='waves'
+        )
