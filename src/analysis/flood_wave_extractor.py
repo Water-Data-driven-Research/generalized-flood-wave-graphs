@@ -2,24 +2,26 @@ import itertools
 
 import networkx as nx
 
+from src.data_handling.data_interface import DataInterface
+
 
 class FloodWaveExtractor:
     """
     This class is responsible for extracting the flood waves from a given FWG
     """
     def __init__(self, fwg: nx.DiGraph, wng: nx.DiGraph,
-                 station_coordinates: dict, is_equivalence_applied: bool):
+                 data_if: DataInterface, is_equivalence_applied: bool):
         """
         Constructor.
         :param nx.DiGraph fwg: the filtered Flood Wave Graph
         :param nx.DiGraph wng: the filtered Water Network Graph
-        :param dict station_coordinates: coordinates of each station in a dictionary
+        :param DataInterface data_if: a DataInterface instance
         :param bool is_equivalence_applied: True if we only consider one element of the equivalence
         classes, False otherwise
         """
         self.fwg = fwg
         self.wng = wng
-        self.station_coordinates = station_coordinates
+        self.station_coordinates = data_if.station_coordinates
         self.is_equivalence_applied = is_equivalence_applied
 
         self.flood_waves = []
