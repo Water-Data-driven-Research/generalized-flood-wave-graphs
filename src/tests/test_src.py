@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 from src.analysis.flood_wave_extractor import FloodWaveExtractor
+from src.analysis.flood_wave_selector import FloodWaveSelector
 from src.analysis.wng_path_fwg_selector import WNGPathFWGSelector
 from src.data_handling.data_downloader import DataDownloader
 from src.data_handling.data_handler import DataHandler
@@ -221,3 +222,105 @@ def test_flood_wave_extractor():
     ]
 
     assert extractor.flood_waves == expected_flood_waves, 'FloodWaveExtractor is not working properly.'
+
+
+def test_flood_wave_selection_by_impacted_stations():
+    waves = [
+        [('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-05'), ('1518', '2016-02-07'), ('1520', '2016-02-07')],
+        [('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-02')],
+        [('1514', '2016-02-05'), ('1515', '2016-02-05'), ('1516', '2016-02-06')],
+        [('1514', '2016-02-12'), ('1515', '2016-02-12'), ('1516', '2016-02-13')]
+    ]
+    impacted_stations = ['1515', '171517']
+
+    expected_filtered_waves = [
+        [('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-05'), ('1518', '2016-02-07'), ('1520', '2016-02-07')],
+        [('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-02')]
+    ]
+
+    waves_without_equivalence = [
+        [[('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-05'), ('1518', '2016-02-07'), ('1520', '2016-02-07')],
+         [('1514', '2016-02-01'), ('1515', '2016-02-03'), ('1516', '2016-02-03'),
+         ('171517', '2016-02-06'), ('1518', '2016-02-06'), ('1520', '2016-02-07')]],
+        [[('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-02')],
+         [('1514', '2016-02-01'), ('1515', '2016-02-01'), ('1516', '2016-02-01'),
+         ('171517', '2016-02-02')]]
+    ]
+    impacted_stations_2 = ['1518']
+
+    expected_filtered_waves_without_equivalence = [
+        [[('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+          ('171517', '2016-02-05'), ('1518', '2016-02-07'), ('1520', '2016-02-07')],
+         [('1514', '2016-02-01'), ('1515', '2016-02-03'), ('1516', '2016-02-03'),
+          ('171517', '2016-02-06'), ('1518', '2016-02-06'), ('1520', '2016-02-07')]]
+    ]
+
+    filtered_waves = FloodWaveSelector.get_flood_waves_by_impacted_stations(
+        waves=waves,
+        impacted_stations=impacted_stations,
+        is_equivalence_applied=True
+    )
+
+    filtered_waves_without_equivalence = FloodWaveSelector.get_flood_waves_by_impacted_stations(
+        waves=waves_without_equivalence,
+        impacted_stations=impacted_stations_2,
+        is_equivalence_applied=False
+    )
+
+    assert filtered_waves == expected_filtered_waves, 'Station filtering with equivalence is not working.'
+
+    error_msg = 'Station filtering without equivalence is not working.'
+    assert filtered_waves_without_equivalence == expected_filtered_waves_without_equivalence, error_msg
+
+
+def test_flood_wave_selection_by_duration():
+    waves = [
+        [('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-05'), ('1518', '2016-02-07'), ('1520', '2016-02-07')],
+        [('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-02')],
+        [('1514', '2016-02-05'), ('1515', '2016-02-05'), ('1516', '2016-02-06')],
+        [('1514', '2016-02-12'), ('1515', '2016-02-12'), ('1516', '2016-02-13')]
+    ]
+    duration = 1
+    expected_filtered_waves = [
+        [('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-02')],
+        [('1514', '2016-02-05'), ('1515', '2016-02-05'), ('1516', '2016-02-06')],
+        [('1514', '2016-02-12'), ('1515', '2016-02-12'), ('1516', '2016-02-13')]
+    ]
+
+    waves_without_equivalence = [
+        [[('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+          ('171517', '2016-02-05'), ('1518', '2016-02-07'), ('1520', '2016-02-07')],
+         [('1514', '2016-02-01'), ('1515', '2016-02-03'), ('1516', '2016-02-03'),
+          ('171517', '2016-02-06'), ('1518', '2016-02-06'), ('1520', '2016-02-07')]],
+        [[('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+          ('171517', '2016-02-02')],
+         [('1514', '2016-02-01'), ('1515', '2016-02-01'), ('1516', '2016-02-01'),
+          ('171517', '2016-02-02')]]
+    ]
+    duration_2 = 6
+
+    filtered_waves = FloodWaveSelector.get_flood_waves_by_duration(
+        waves=waves,
+        max_duration_days=duration,
+        is_equivalence_applied=True
+    )
+
+    filtered_waves_without_equivalence = FloodWaveSelector.get_flood_waves_by_duration(
+        waves=waves_without_equivalence,
+        max_duration_days=duration_2,
+        is_equivalence_applied=False
+    )
+
+    assert filtered_waves == expected_filtered_waves, 'Duration filtering with equivalence is not working.'
+
+    error_msg = 'Duration filtering without equivalence is not working.'
+    assert filtered_waves_without_equivalence == waves_without_equivalence, error_msg

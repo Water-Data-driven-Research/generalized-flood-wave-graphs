@@ -29,7 +29,8 @@ class FloodWaveSelector:
                     stations_in_flood_wave = [path[i][0] for i in range(len(path))]
                     if set(impacted_stations).issubset(stations_in_flood_wave):
                         filtered_paths.append(path)
-                        final_waves.append(filtered_paths)
+                if len(filtered_paths):
+                    final_waves.append(filtered_paths)
 
         return final_waves
 
