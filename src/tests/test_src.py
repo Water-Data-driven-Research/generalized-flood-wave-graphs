@@ -3,6 +3,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
+from src.analysis.flood_wave_extractor import FloodWaveExtractor
 from src.analysis.wng_path_fwg_selector import WNGPathFWGSelector
 from src.data_handling.data_downloader import DataDownloader
 from src.data_handling.data_handler import DataHandler
@@ -142,3 +143,82 @@ def test_path_selector():
         do_all_nodes_pass = do_all_nodes_pass * does_node_pass
 
     assert do_all_nodes_pass, 'Some nodes of the FWG do not satisfy the requirements.'
+
+
+def test_flood_wave_extractor():
+    spatial_filtering = {
+        'source': '1514',
+        'target': '1520',
+        'through': []
+    }
+
+    temporal_filtering = {
+        'start_date': '2016-02-01',
+        'end_date': '2016-02-15'
+    }
+
+    ddl = DataDownloader(
+        folder_link='https://drive.google.com/drive/folders/1XDQmvYwXSjqXgLu6wZjbxR8ugCSi3Sy5',
+        data_folder_path=None
+    )
+
+    dl = DataLoader(
+        data_folder_path=ddl.data_folder_path
+    )
+
+    data_handler = DataHandler(dl=dl)
+
+    station_river_creator = StationRiverCreator(data_if=data_handler.data_if)
+    station_river_creator.run()
+
+    wng_builder = WaterNetworkGraphBuilder(
+        station_river_if=station_river_creator.station_river_if,
+        do_save_all=True,
+        data_folder_path=ddl.data_folder_path
+    )
+    wng_builder.run()
+
+    fwg_preparer = FloodWaveGraphPreparer(
+        data_if=data_handler.data_if,
+        station_river_data_if=station_river_creator.station_river_if,
+        beta=3, delta=2
+    )
+    fwg_preparer.run()
+
+    fwg_builder = FloodWaveGraphBuilder(
+        preparer_interface=fwg_preparer.preparer_if,
+        do_save_fwg=True,
+        data_folder_path=ddl.data_folder_path
+    )
+    fwg_builder.run()
+
+    path_selector = WNGPathFWGSelector(
+        data_folder_path=ddl.data_folder_path,
+        spatial_filtering=spatial_filtering,
+        temporal_filtering=temporal_filtering,
+        fwg_data_if=fwg_builder.fwg_if,
+        wng_data_if=wng_builder.wng_if
+    )
+    path_selector.run()
+
+    extractor = FloodWaveExtractor(
+        fwg=path_selector.fwg_subgraph,
+        wng=path_selector.wng_subgraph,
+        data_if=data_handler.data_if,
+        is_equivalence_applied=True,
+        do_save_flood_waves=False,
+        data_folder_path=ddl.data_folder_path
+    )
+    extractor.run()
+
+    expected_flood_waves = [
+        [('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-05'), ('1518', '2016-02-07'), ('1520', '2016-02-07')],
+        [('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-02')],
+        [('1514', '2016-02-05'), ('1515', '2016-02-05'), ('1516', '2016-02-06')],
+        [('1514', '2016-02-12'), ('1515', '2016-02-12'), ('1516', '2016-02-13')]
+    ]
+    print(extractor.flood_waves)
+
+    assert extractor.flood_waves == expected_flood_waves, 'FloodWaveExtractor is not working properly.'

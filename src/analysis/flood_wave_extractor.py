@@ -47,7 +47,8 @@ class FloodWaveExtractor:
         """
         This function returns the actual flood waves in the FWG with equivalence.
         """
-        components = list(nx.weakly_connected_components(self.fwg))
+        components_unsorted = list(nx.weakly_connected_components(self.fwg))
+        components = sorted([sorted(component) for component in components_unsorted])
 
         waves = []
         for comp in components:
