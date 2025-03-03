@@ -3,6 +3,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
+from src.analysis.flood_wave_analyser import FloodWaveAnalyser
 from src.analysis.flood_wave_extractor import FloodWaveExtractor
 from src.analysis.flood_wave_selector import FloodWaveSelector
 from src.analysis.wng_path_fwg_selector import WNGPathFWGSelector
@@ -324,3 +325,24 @@ def test_flood_wave_selection_by_duration():
 
     error_msg = 'Duration filtering without equivalence is not working.'
     assert filtered_waves_without_equivalence == waves_without_equivalence, error_msg
+
+
+def test_flood_wave_analyser():
+    flood_waves = [
+        [('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-05'), ('1518', '2016-02-07'), ('1520', '2016-02-07')],
+        [('1514', '2016-02-01'), ('1515', '2016-02-02'), ('1516', '2016-02-02'),
+         ('171517', '2016-02-02')],
+        [('1514', '2016-02-05'), ('1515', '2016-02-05'), ('1516', '2016-02-06')],
+        [('1514', '2016-02-12'), ('1515', '2016-02-12'), ('1516', '2016-02-13')]
+    ]
+
+    expected_spatial_lengths = [6, 4, 3, 3]
+    expected_durations = [6, 1, 1, 1]
+
+    analyser = FloodWaveAnalyser(flood_waves=flood_waves, is_equivalence_applied=True)
+    analyser.run()
+
+    assert analyser.spatial_lengths == expected_spatial_lengths, 'Spatial lengths do not match.'
+
+    assert analyser.durations == expected_durations, 'Durations do not match.'
