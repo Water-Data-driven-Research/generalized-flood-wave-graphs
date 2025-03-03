@@ -3,6 +3,7 @@ import os
 import pickle
 
 import networkx as nx
+import pandas as pd
 
 
 class GeneratedDataLoader:
@@ -86,3 +87,19 @@ class GeneratedDataLoader:
             loaded_data = json.load(f)
 
         return loaded_data
+
+    @staticmethod
+    def save_csv(data: pd.DataFrame, data_folder_path: str,
+                  subfolder_names: list, file_name: str) -> None:
+        """
+        Function for saving dataframes into csv files.
+        :param pd.DataFrame data: dataframe we wish to save
+        :param str data_folder_path: path of the data folder
+        :param list subfolder_names: there nested folder will be created and the file will be
+        saved in the rightmost folder
+        :param str file_name: name of the json file
+        """
+        folder_names_chain = ['generated'] + subfolder_names
+        path = os.path.join(data_folder_path, *folder_names_chain, f"{file_name}.csv")
+
+        data.to_csv(path)
