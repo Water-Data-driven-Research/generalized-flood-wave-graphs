@@ -219,6 +219,5 @@ def test_flood_wave_extractor():
         [('1514', '2016-02-05'), ('1515', '2016-02-05'), ('1516', '2016-02-06')],
         [('1514', '2016-02-12'), ('1515', '2016-02-12'), ('1516', '2016-02-13')]
     ]
-    print(extractor.flood_waves)
 
     assert extractor.flood_waves == expected_flood_waves, 'FloodWaveExtractor is not working properly.'
