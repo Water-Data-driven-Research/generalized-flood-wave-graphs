@@ -3,6 +3,7 @@ from datetime import datetime
 
 import networkx as nx
 
+from src.analysis.flood_wave_extractor_interface import FloodWaveExtractorInterface
 from src.data_handling.data_interface import DataInterface
 from src.data_handling.generated_dataloader import GeneratedDataLoader
 
@@ -31,21 +32,21 @@ class FloodWaveExtractor:
         self.do_save_flood_waves = do_save_flood_waves
         self.data_folder_path = data_folder_path
 
-        self.flood_waves = []
-        self.current_date_and_time = ''
+        self.extractor_if = FloodWaveExtractorInterface()
 
     def run(self) -> None:
         """
         Run function. Gets flood waves.
         """
-        self.get_flood_waves()
+        self.extractor_if.flood_waves = self.get_flood_waves()
 
         if self.do_save_flood_waves:
             self.save_flood_waves()
 
-    def get_flood_waves(self) -> None:
+    def get_flood_waves(self) -> list:
         """
         This function returns the actual flood waves in the FWG with equivalence.
+        :return list: list of extracted flood waves
         """
         components_unsorted = list(nx.weakly_connected_components(self.fwg))
         components = sorted([sorted(component) for component in components_unsorted])
@@ -64,7 +65,7 @@ class FloodWaveExtractor:
                 except nx.NetworkXNoPath:
                     continue
 
-        self.flood_waves = waves
+        return waves
 
     def get_possible_pairs(self, comp: list) -> list:
         """
@@ -111,12 +112,13 @@ class FloodWaveExtractor:
         extracted_flood_waves = {
             'is_equivalence_applied': self.is_equivalence_applied,
             'stations': stations,
-            'flood_waves': self.flood_waves
+            'flood_waves': self.extractor_if.flood_waves
         }
 
-        self.current_date_and_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        current_date_and_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        self.extractor_if.timestamp_folder_name = current_date_and_time
 
-        subfolder_names = ['flood_waves', self.current_date_and_time]
+        subfolder_names = ['flood_waves', current_date_and_time]
 
         GeneratedDataLoader.save_json(
             data=extracted_flood_waves,
