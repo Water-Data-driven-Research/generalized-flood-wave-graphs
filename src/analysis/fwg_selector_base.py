@@ -48,13 +48,10 @@ class FWGSelectorBase:
             if is_node_in_subgraph and is_date_between_bounds:
                 nodes_to_keep.append(node)
 
-        subgraph = nx.DiGraph(
-            copy.deepcopy(
-                self.fwg.subgraph(nodes_to_keep)
-            )
+        self.fwg_subgraph = copy.deepcopy(self.fwg)
+        self.fwg_subgraph.remove_nodes_from(
+            [n for n in self.fwg if n not in nodes_to_keep]
         )
-        subgraph.remove_nodes_from(
-            list(nx.isolates(subgraph))
+        self.fwg_subgraph.remove_nodes_from(
+            list(nx.isolates(self.fwg_subgraph))
         )
-
-        self.fwg_subgraph = nx.DiGraph(subgraph)

@@ -107,10 +107,13 @@ class FloodWaveGraphPreparer:
                 date_datetime = datetime.datetime.strftime(date, "%Y-%m-%d")
 
                 # final structure of edges
-                start_node = [(start, date_datetime)]
-                end_nodes = list(product(
-                    [end], list(filtered_ends_datetime)
+                water_level_at_start_node = int(self.time_series_data[start].loc[date_datetime])
+                start_node = [(start, date_datetime, water_level_at_start_node)]
+                water_levels_at_end_nodes = list(map(
+                    int,
+                    list(self.time_series_data[end].loc[filtered_ends_datetime].values)
                 ))
+                end_nodes = [(end, bi, ci) for bi, ci in zip(filtered_ends_datetime, water_levels_at_end_nodes)]
 
                 edges = list(product(
                     start_node, end_nodes
