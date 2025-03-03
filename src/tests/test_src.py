@@ -15,6 +15,27 @@ from src.wng_building.station_river_data_interface import StationRiverDataInterf
 from src.wng_building.water_network_graph_builder import WaterNetworkGraphBuilder
 
 
+def create_example_data() -> Tuple[pd.DataFrame, dict]:
+    completed_rivers = {
+        'c_r': ['1111', '2222']
+    }
+
+    ts1 = [100, 100, 120, 120, 120, 130, 100, 100, 100, 130, 100, 110, 120, 120, 120]
+    ts2 = [120, 120, 120, 100, 110, 110, 130, 100, 120, 130, 130, 120, 140, 100, 100]
+
+    time_series_data = pd.DataFrame(
+        data=np.array([ts1, ts2]).T,
+        index=pd.date_range(
+            start='2000-01-01',
+            end='2000-01-15',
+            freq='D'
+        ),
+        columns=completed_rivers['c_r']
+    )
+
+    return time_series_data, completed_rivers
+
+
 def test_fwg_building():
     time_series_data, completed_rivers = create_example_data()
 
@@ -121,23 +142,3 @@ def test_path_selector():
         do_all_nodes_pass = do_all_nodes_pass * does_node_pass
 
     assert do_all_nodes_pass, 'Some nodes of the FWG do not satisfy the requirements.'
-
-def create_example_data() -> Tuple[pd.DataFrame, dict]:
-    completed_rivers = {
-        'c_r': ['1111', '2222']
-    }
-
-    ts1 = [100, 100, 120, 120, 120, 130, 100, 100, 100, 130, 100, 110, 120, 120, 120]
-    ts2 = [120, 120, 120, 100, 110, 110, 130, 100, 120, 130, 130, 120, 140, 100, 100]
-
-    time_series_data = pd.DataFrame(
-        data=np.array([ts1, ts2]).T,
-        index=pd.date_range(
-            start='2000-01-01',
-            end='2000-01-15',
-            freq='D'
-        ),
-        columns=completed_rivers['c_r']
-    )
-
-    return time_series_data, completed_rivers

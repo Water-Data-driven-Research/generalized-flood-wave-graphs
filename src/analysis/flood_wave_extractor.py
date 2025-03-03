@@ -32,6 +32,7 @@ class FloodWaveExtractor:
         self.data_folder_path = data_folder_path
 
         self.flood_waves = []
+        self.current_date_and_time = ''
 
     def run(self) -> None:
         """
@@ -112,9 +113,9 @@ class FloodWaveExtractor:
             'flood_waves': self.flood_waves
         }
 
-        current_date_and_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        self.current_date_and_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-        subfolder_names = ['flood_waves', current_date_and_time]
+        subfolder_names = ['flood_waves', self.current_date_and_time]
 
         GeneratedDataLoader.save_json(
             data=extracted_flood_waves,
