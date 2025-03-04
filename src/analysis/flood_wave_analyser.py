@@ -3,6 +3,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
+from src.analysis.flood_wave_extractor_interface import FloodWaveExtractorInterface
 from src.data_handling.generated_dataloader import GeneratedDataLoader
 
 
@@ -10,38 +11,14 @@ class FloodWaveAnalyser:
     """
     Class for analysing flood waves.
     """
-    def __init__(self, flood_waves: list = None, is_equivalence_applied: bool = None,
-                 data_folder_path: str = None, wave_folder_name: str = None,
-                 do_save_results: bool = False):
-        """
-        Constructor. Either pass flood_waves and is_equivalence_applied, or let the constructor
-        load these data with the help of data_folder_path and wave_folder_name. If do_save_results
-        is True, then we must pass data_folder_path.
-        :param list flood_waves: list of all flood waves we wish to analyse
-        :param bool is_equivalence_applied: True if we only consider one element of the equivalence
-        classes, False otherwise
-        :param str data_folder_path: path of the data folder
-        :param str wave_folder_name: name of the folder containing the waves file
-        """
+    def __init__(self, extractor_if: FloodWaveExtractorInterface,
+                 is_equivalence_applied: bool,
+                 do_save_results: bool = False, data_folder_path: str = None):
+        self.flood_waves = extractor_if.flood_waves
+        self.is_equivalence_applied = is_equivalence_applied
         self.do_save_results = do_save_results
-        if flood_waves is not None and not self.do_save_results:
-            self.flood_waves = flood_waves
-            self.is_equivalence_applied = is_equivalence_applied
-        elif flood_waves is not None and self.do_save_results:
-            self.flood_waves = flood_waves
-            self.is_equivalence_applied = is_equivalence_applied
-            self.data_folder_path = data_folder_path
-            self.wave_folder_name = wave_folder_name
-        else:
-            self.data_folder_path = data_folder_path
-            self.wave_folder_name = wave_folder_name
-            waves = GeneratedDataLoader.read_json(
-                data_folder_path=self.data_folder_path,
-                subfolder_names=['flood_waves', self.wave_folder_name],
-                file_name='waves'
-            )
-            self.flood_waves = waves['flood_waves']
-            self.is_equivalence_applied = waves['is_equivalence_applied']
+        self.data_folder_path = data_folder_path
+        self.timestamp_folder_name = extractor_if.timestamp_folder_name
 
         if self.is_equivalence_applied:
             self.flood_waves_to_analyse = self.flood_waves
@@ -112,14 +89,14 @@ class FloodWaveAnalyser:
         GeneratedDataLoader.save_json(
             data=self.statistical_results,
             data_folder_path=self.data_folder_path,
-            subfolder_names=['flood_waves', self.wave_folder_name],
+            subfolder_names=['flood_waves', self.timestamp_folder_name],
             file_name='statistical_results'
         )
 
         GeneratedDataLoader.save_csv(
             data=df,
             data_folder_path=self.data_folder_path,
-            subfolder_names=['flood_waves', self.wave_folder_name],
+            subfolder_names=['flood_waves', self.timestamp_folder_name],
             file_name='lengths_and_durations'
         )
 
