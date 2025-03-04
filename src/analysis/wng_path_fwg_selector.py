@@ -23,7 +23,7 @@ class WNGPathFWGSelector(FWGSelectorBase):
         specify which nodes we would like the path to go through. For example
         {
             'source': '744618',
-            'target': 2275,
+            'target': '2275',
             'through': []
         }
         :param dict temporal_filtering: dictionary containing the start date and end date,
