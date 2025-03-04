@@ -49,7 +49,7 @@ class FloodWaveExtractor:
         :return list: list of extracted flood waves
         """
         components_unsorted = list(nx.weakly_connected_components(self.fwg))
-        components = sorted([sorted(component) for component in components_unsorted])
+        components = sorted(map(sorted, components_unsorted))
 
         waves = []
         for comp in components:
