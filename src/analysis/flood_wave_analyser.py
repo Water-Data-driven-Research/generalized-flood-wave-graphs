@@ -75,6 +75,22 @@ class FloodWaveAnalyser:
 
         return temporal_lengths
 
+    @staticmethod
+    def get_statistics(data: np.ndarray) -> dict:
+        """
+        Gathers basic statistics of some numerical data.
+        :param np.array data: spatial or temporal lengths
+        :return dict: dictionary of basic statistics
+        """
+        stats = {
+            'mean': float(np.mean(data)),
+            'median': float(np.median(data)),
+            'max': int(np.max(data)),
+            'min': int(np.min(data))
+        }
+
+        return stats
+
     def save_results(self) -> None:
         """
         Saves results into the desired folder.
@@ -99,19 +115,3 @@ class FloodWaveAnalyser:
             subfolder_names=['flood_waves', self.timestamp_folder_name],
             file_name='lengths_and_durations'
         )
-
-    @staticmethod
-    def get_statistics(data: np.ndarray) -> dict:
-        """
-        Gathers basic statistics of some numerical data.
-        :param np.array data: spatial or temporal lengths
-        :return dict: dictionary of basic statistics
-        """
-        stats = {
-            'mean': float(np.mean(data)),
-            'median': float(np.median(data)),
-            'max': int(np.max(data)),
-            'min': int(np.min(data))
-        }
-
-        return stats
