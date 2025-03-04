@@ -22,4 +22,4 @@ class WNGSinkFWGPlotPreparer:
             base_y = self.station_coordinates[node[0]]['EOVx']
             self.node_positions[node] = (base_x, base_y)
 
-            self.dates_dict[node[0]].append([node[1]])
+            self.dates_dict[node[0]].append(node[1])
