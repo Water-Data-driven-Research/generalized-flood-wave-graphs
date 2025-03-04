@@ -108,8 +108,8 @@ class WaterNetworkGraphBuilder:
         GeneratedDataLoader.save_pickle(
             vertices=self.wng_if.vertices, edges=[],
             data_folder_path=self.data_folder_path,
-            folder_name='vertices',
-            file_name='vertices'
+            folder_name='wng_vertices',
+            file_name='wng_vertices'
         )
 
         # save rivers and completed rivers individually

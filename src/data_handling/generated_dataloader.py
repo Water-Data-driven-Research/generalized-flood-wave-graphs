@@ -1,7 +1,9 @@
+import json
 import os
 import pickle
 
 import networkx as nx
+import pandas as pd
 
 
 class GeneratedDataLoader:
@@ -52,3 +54,52 @@ class GeneratedDataLoader:
             graph = pickle.load(f)
 
         return graph
+
+    @staticmethod
+    def save_json(data: dict, data_folder_path: str,
+                  subfolder_names: list, file_name: str) -> None:
+        """
+        Function for saving dictionaries into json files.
+        :param dict data: dictionary we wish to save
+        :param str data_folder_path: path of the data folder
+        :param list subfolder_names: there nested folder will be created and the file will be
+        saved in the rightmost folder
+        :param str file_name: name of the json file
+        """
+        folder_names_chain = ['generated'] + subfolder_names
+        os.makedirs(os.path.join(data_folder_path, *folder_names_chain), exist_ok=True)
+
+        with open(os.path.join(data_folder_path, *folder_names_chain, f"{file_name}.json"), "w") as f:
+            json.dump(data, f)
+
+    @staticmethod
+    def read_json(data_folder_path: str, subfolder_names: list, file_name: str) -> dict:
+        """
+        Function for loading json files into dictionaries.
+        :param str data_folder_path: path of the data folder
+        :param list subfolder_names: there nested folder will be created and the file will be
+        saved in the rightmost folder
+        :param str file_name: name of the json file
+        :return dict: the loaded dictionary
+        """
+        folder_names_chain = ['generated'] + subfolder_names
+        with open(os.path.join(data_folder_path, *folder_names_chain, f"{file_name}.json"), "r") as f:
+            loaded_data = json.load(f)
+
+        return loaded_data
+
+    @staticmethod
+    def save_csv(data: pd.DataFrame, data_folder_path: str,
+                  subfolder_names: list, file_name: str) -> None:
+        """
+        Function for saving dataframes into csv files.
+        :param pd.DataFrame data: dataframe we wish to save
+        :param str data_folder_path: path of the data folder
+        :param list subfolder_names: there nested folder will be created and the file will be
+        saved in the rightmost folder
+        :param str file_name: name of the json file
+        """
+        folder_names_chain = ['generated'] + subfolder_names
+        path = os.path.join(data_folder_path, *folder_names_chain, f"{file_name}.csv")
+
+        data.to_csv(path)

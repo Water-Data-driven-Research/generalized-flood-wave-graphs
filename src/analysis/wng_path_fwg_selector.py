@@ -1,3 +1,5 @@
+import copy
+
 import networkx as nx
 
 from src.analysis.fwg_selector_base import FWGSelectorBase
@@ -62,8 +64,8 @@ class WNGPathFWGSelector(FWGSelectorBase):
 
         for path in all_paths:
             if set(self.spatial_filtering['through']).issubset(path):
-                path_graph = self.wng.subgraph(nodes=path)
-                self.wng_subgraph = nx.DiGraph(path_graph)
+                self.wng_subgraph = copy.deepcopy(self.wng)
+                self.wng_subgraph.remove_nodes_from([n for n in self.wng if n not in set(path)])
 
                 return
 
