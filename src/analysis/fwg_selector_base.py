@@ -12,27 +12,39 @@ class FWGSelectorBase:
     """
     def __init__(self, temporal_filtering: dict,
                  data_folder_path: str,
-                 fwg_data_if: FWGDataInterface, wng_data_if: WNGDataInterface):
+                 fwg_data_if: FWGDataInterface, wng_data_if: WNGDataInterface,
+                 do_remove_water_levels: bool):
         """
         Constructor.
         :param dict temporal_filtering: {'start_date': start_date, 'end_date': end_date}
         :param str data_folder_path: path of the data folder
         :param FWGDataInterface fwg_data_if: an FWGDataInterface instance
         :param WNGDataInterface wng_data_if: a WNGDataInterface instance
+        :param bool do_remove_water_levels: True if remove water levels from nodes, hence turning
+        three-tuple nodes into two-tuples, False if not
         """
         self.fwg = fwg_data_if.flood_wave_graph
         self.wng = wng_data_if.water_network_graph
         self.data_folder_path = data_folder_path
         self.temporal_filtering = temporal_filtering
+        self.do_remove_water_levels = do_remove_water_levels
 
         self.wng_subgraph = nx.DiGraph()
         self.fwg_subgraph = nx.DiGraph()
 
     def run(self) -> None:
         """
-        Run function. Gets the desired subgraph of the FWG.
+        Run function. Removes water levels if necessary. Gets the desired subgraph
+        of the FWG.
         """
+        if self.do_remove_water_levels:
+            self.remove_water_levels()
+
         self.get_fwg_subgraph()
+
+    def remove_water_levels(self) -> None:
+        relabel_mapping = {node: (node[0], node[1]) for node in self.fwg.nodes}
+        nx.relabel_nodes(G=self.fwg, mapping=relabel_mapping, copy=False)
 
     def get_fwg_subgraph(self):
         """

@@ -35,7 +35,8 @@ class WNGSinkFWGSelector(FWGSelectorBase):
         super().__init__(
             temporal_filtering=temporal_filtering,
             data_folder_path=data_folder_path,
-            fwg_data_if=fwg_data_if, wng_data_if=wng_data_if
+            fwg_data_if=fwg_data_if, wng_data_if=wng_data_if,
+            do_remove_water_levels=True
         )
         self.sink = spatial_filtering['sink']
 
