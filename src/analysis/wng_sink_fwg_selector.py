@@ -14,7 +14,8 @@ class WNGSinkFWGSelector(FWGSelectorBase):
     """
     def __init__(self, data_folder_path: str,
                  spatial_filtering: dict, temporal_filtering: dict,
-                 fwg_data_if: FWGDataInterface, wng_data_if: WNGDataInterface):
+                 fwg_data_if: FWGDataInterface, wng_data_if: WNGDataInterface,
+                 do_remove_water_levels: bool = True):
         """
         Constructor.
         :param str data_folder_path: path of the data folder
@@ -36,7 +37,7 @@ class WNGSinkFWGSelector(FWGSelectorBase):
             temporal_filtering=temporal_filtering,
             data_folder_path=data_folder_path,
             fwg_data_if=fwg_data_if, wng_data_if=wng_data_if,
-            do_remove_water_levels=True
+            do_remove_water_levels=do_remove_water_levels
         )
         self.sink = spatial_filtering['sink']
 
