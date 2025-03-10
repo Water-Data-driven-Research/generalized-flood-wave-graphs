@@ -55,7 +55,7 @@ class WNGSinkFWGSelector(FWGSelectorBase):
         if self.sink not in self.wng:
             raise ValueError("Sink node is not in the graph.")
 
-        # Reverse the graph and perform BFS from sink
+        # Reverse the graph and perform BFS from the given node
         reversed_wng = self.wng.reverse()
         reachable_nodes = set(nx.bfs_tree(reversed_wng, self.sink).nodes)
 
