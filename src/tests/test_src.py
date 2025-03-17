@@ -3,11 +3,11 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from src.analysis.flood_wave_analyser import FloodWaveAnalyser
-from src.analysis.flood_wave_extractor import FloodWaveExtractor
-from src.analysis.flood_wave_extractor_interface import FloodWaveExtractorInterface
-from src.analysis.flood_wave_selector import FloodWaveSelector
-from src.analysis.wng_path_fwg_selector import WNGPathFWGSelector
+from src.analysis.static.flood_wave_analyser import FloodWaveAnalyser
+from src.analysis.static.flood_wave_extractor import FloodWaveExtractor
+from src.analysis.static.flood_wave_extractor_interface import FloodWaveExtractorInterface
+from src.analysis.static.flood_wave_selector import FloodWaveSelector
+from src.analysis.dynamic.wng_path_fwg_selector import WNGPathFWGSelector
 from src.data_handling.data_downloader import DataDownloader
 from src.data_handling.data_handler import DataHandler
 from src.data_handling.data_interface import DataInterface
@@ -126,12 +126,10 @@ def test_path_selector():
 
     path_selector = WNGPathFWGSelector(
         data_folder_path=ddl.data_folder_path,
-        spatial_filtering=spatial_filtering,
-        temporal_filtering=temporal_filtering,
         fwg_data_if=fwg_builder.fwg_if,
         wng_data_if=wng_builder.wng_if
     )
-    path_selector.run()
+    path_selector.run(temporal_filtering=temporal_filtering, spatial_filtering=spatial_filtering)
 
     expected_stations = ['2753', '2756', '2759', '2760', '2272', '2274', '2275', '100283']
 
@@ -198,12 +196,10 @@ def test_flood_wave_extractor():
 
     path_selector = WNGPathFWGSelector(
         data_folder_path=ddl.data_folder_path,
-        spatial_filtering=spatial_filtering,
-        temporal_filtering=temporal_filtering,
         fwg_data_if=fwg_builder.fwg_if,
         wng_data_if=wng_builder.wng_if
     )
-    path_selector.run()
+    path_selector.run(temporal_filtering=temporal_filtering, spatial_filtering=spatial_filtering)
 
     extractor = FloodWaveExtractor(
         fwg=path_selector.fwg_subgraph,

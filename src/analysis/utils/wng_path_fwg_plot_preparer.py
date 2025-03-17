@@ -2,7 +2,7 @@ import copy
 
 import networkx as nx
 
-from src.analysis.position_creator import PositionCreator
+from src.analysis.static.position_creator import PositionCreator
 
 
 class WNGPathFWGPlotPreparer:
