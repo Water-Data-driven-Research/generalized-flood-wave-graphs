@@ -3,11 +3,11 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from src.analysis.flood_wave_analyser import FloodWaveAnalyser
-from src.analysis.flood_wave_extractor import FloodWaveExtractor
-from src.analysis.flood_wave_extractor_interface import FloodWaveExtractorInterface
-from src.analysis.flood_wave_selector import FloodWaveSelector
-from src.analysis.wng_path_fwg_selector import WNGPathFWGSelector
+from src.analysis.static.flood_wave_analyser import FloodWaveAnalyser
+from src.analysis.static.flood_wave_extractor import FloodWaveExtractor
+from src.analysis.static.flood_wave_extractor_interface import FloodWaveExtractorInterface
+from src.analysis.static.flood_wave_selector import FloodWaveSelector
+from src.analysis.dynamic.wng_path_fwg_selector import WNGPathFWGSelector
 from src.data_handling.data_downloader import DataDownloader
 from src.data_handling.data_handler import DataHandler
 from src.data_handling.data_interface import DataInterface

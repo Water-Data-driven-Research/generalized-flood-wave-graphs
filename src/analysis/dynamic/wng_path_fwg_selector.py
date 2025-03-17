@@ -2,7 +2,7 @@ import copy
 
 import networkx as nx
 
-from src.analysis.fwg_selector_base import FWGSelectorBase
+from src.analysis.dynamic.fwg_selector_base import FWGSelectorBase
 from src.fwg_building.fwg_data_interface import FWGDataInterface
 from src.wng_building.wng_data_interface import WNGDataInterface
 
