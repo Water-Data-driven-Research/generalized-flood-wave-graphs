@@ -29,7 +29,7 @@ class WNGPathFWGSelector(FWGSelectorBase):
             do_remove_water_levels=do_remove_water_levels
         )
 
-    def run(self, temporal_filtering: dict, **kwargs) -> None:
+    def run(self, temporal_filtering: dict, spatial_filtering: dict) -> None:
         """
         Run function. Gets the desired path in the WNG and then filters the FWG along this path.
         :param dict temporal_filtering: dictionary containing the start date and end date,
@@ -38,20 +38,21 @@ class WNGPathFWGSelector(FWGSelectorBase):
             'start_date': '2000-01-01',
             'end_date': '2000-02-01'
         }
-        **kwargs:
-            dict spatial_filtering: Dictionary containing parameters for spatial filtering,
-            keys are 'source', 'target' and 'through'. 'through' is a list of additional nodes that
-            specify which nodes we would like the path to go through. For example
-            {
-                'source': '744618',
-                'target': '2275',
-                'through': []
-            }
+        :param dict spatial_filtering: Dictionary containing parameters for spatial filtering,
+        keys are 'source', 'target' and 'through'. 'through' is a list of additional nodes that
+        specify which nodes we would like the path to go through. For example
+        {
+            'source': '744618',
+            'target': '2275',
+            'through': []
+        }
         """
-        spatial_filtering = kwargs.get("spatial_filtering")
         self.get_wng_path(spatial_filtering=spatial_filtering)
 
-        super().run(temporal_filtering=temporal_filtering)
+        if self.do_remove_water_levels:
+            self.remove_water_levels()
+
+        self.get_fwg_subgraph(temporal_filtering=temporal_filtering)
 
     def get_wng_path(self, spatial_filtering: dict) -> None:
         """

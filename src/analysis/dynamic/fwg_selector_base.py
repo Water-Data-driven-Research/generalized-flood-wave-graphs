@@ -1,4 +1,5 @@
 import copy
+from abc import ABC, abstractmethod
 
 import networkx as nx
 
@@ -6,7 +7,7 @@ from src.fwg_building.fwg_data_interface import FWGDataInterface
 from src.wng_building.wng_data_interface import WNGDataInterface
 
 
-class FWGSelectorBase:
+class FWGSelectorBase(ABC):
     """
     Class for spatial and temporal filtering of the Flood Wave Graph.
     """
@@ -29,16 +30,14 @@ class FWGSelectorBase:
         self.wng_subgraph = nx.DiGraph()
         self.fwg_subgraph = nx.DiGraph()
 
-    def run(self, temporal_filtering: dict) -> None:
+    @abstractmethod
+    def run(self, temporal_filtering: dict, spatial_filtering: dict) -> None:
         """
-        Run function. Removes water levels if necessary. Gets the desired subgraph
-        of the FWG.
+        Abstract run function.
         :param dict temporal_filtering: {'start_date': start_date, 'end_date': end_date}
+        :param dict spatial_filtering: spatial filtering dictionary described in the child class
         """
-        if self.do_remove_water_levels:
-            self.remove_water_levels()
-
-        self.get_fwg_subgraph(temporal_filtering=temporal_filtering)
+        ...
 
     def remove_water_levels(self) -> None:
         relabel_mapping = {node: (node[0], node[1]) for node in self.fwg.nodes}

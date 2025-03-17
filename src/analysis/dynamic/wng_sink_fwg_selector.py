@@ -27,7 +27,7 @@ class WNGSinkFWGSelector(FWGSelectorBase):
             do_remove_water_levels=do_remove_water_levels
         )
 
-    def run(self, temporal_filtering: dict, **kwargs) -> None:
+    def run(self, temporal_filtering: dict, spatial_filtering: dict) -> None:
         """
         Run function. Gets the desired subgraph in the WNG and then filters the FWG by
         this subgraph.
@@ -37,17 +37,18 @@ class WNGSinkFWGSelector(FWGSelectorBase):
             'start_date': '2000-01-01',
             'end_date': '2000-02-01'
         }
-        **kwargs:
-            dict spatial_filtering: Dictionary containing the reg-number of the desired sink,
-            for example
-            {
-                'sink': '2275'
-            }
+        :param dict spatial_filtering: Dictionary containing the reg-number of the desired sink,
+        for example
+        {
+            'sink': '2275'
+        }
         """
-        spatial_filtering = kwargs.get("spatial_filtering")
         self.get_wng_subgraph_with_sink(spatial_filtering=spatial_filtering)
 
-        super().run(temporal_filtering=temporal_filtering)
+        if self.do_remove_water_levels:
+            self.remove_water_levels()
+
+        self.get_fwg_subgraph(temporal_filtering=temporal_filtering)
 
     def get_wng_subgraph_with_sink(self, spatial_filtering: dict) -> None:
         """
