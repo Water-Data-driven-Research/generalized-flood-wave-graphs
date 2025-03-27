@@ -3,7 +3,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
-from src.analysis.flood_wave_extractor_interface import FloodWaveExtractorInterface
+from src.analysis.static.flood_wave_extractor_interface import FloodWaveExtractorInterface
 from src.data_handling.generated_dataloader import GeneratedDataLoader
 
 

@@ -1,4 +1,5 @@
 import copy
+from abc import ABC, abstractmethod
 
 import networkx as nx
 
@@ -6,17 +7,15 @@ from src.fwg_building.fwg_data_interface import FWGDataInterface
 from src.wng_building.wng_data_interface import WNGDataInterface
 
 
-class FWGSelectorBase:
+class FWGSelectorBase(ABC):
     """
     Class for spatial and temporal filtering of the Flood Wave Graph.
     """
-    def __init__(self, temporal_filtering: dict,
-                 data_folder_path: str,
+    def __init__(self, data_folder_path: str,
                  fwg_data_if: FWGDataInterface, wng_data_if: WNGDataInterface,
                  do_remove_water_levels: bool):
         """
         Constructor.
-        :param dict temporal_filtering: {'start_date': start_date, 'end_date': end_date}
         :param str data_folder_path: path of the data folder
         :param FWGDataInterface fwg_data_if: an FWGDataInterface instance
         :param WNGDataInterface wng_data_if: a WNGDataInterface instance
@@ -26,36 +25,35 @@ class FWGSelectorBase:
         self.fwg = fwg_data_if.flood_wave_graph
         self.wng = wng_data_if.water_network_graph
         self.data_folder_path = data_folder_path
-        self.temporal_filtering = temporal_filtering
         self.do_remove_water_levels = do_remove_water_levels
 
         self.wng_subgraph = nx.DiGraph()
         self.fwg_subgraph = nx.DiGraph()
 
-    def run(self) -> None:
+    @abstractmethod
+    def run(self, temporal_filtering: dict, spatial_filtering: dict) -> None:
         """
-        Run function. Removes water levels if necessary. Gets the desired subgraph
-        of the FWG.
+        Abstract run function.
+        :param dict temporal_filtering: {'start_date': start_date, 'end_date': end_date}
+        :param dict spatial_filtering: spatial filtering dictionary described in the child class
         """
-        if self.do_remove_water_levels:
-            self.remove_water_levels()
-
-        self.get_fwg_subgraph()
+        ...
 
     def remove_water_levels(self) -> None:
         relabel_mapping = {node: (node[0], node[1]) for node in self.fwg.nodes}
         nx.relabel_nodes(G=self.fwg, mapping=relabel_mapping, copy=False)
 
-    def get_fwg_subgraph(self):
+    def get_fwg_subgraph(self, temporal_filtering: dict) -> None:
         """
         Gets the subgraph by keeping only those (reg_num, date) nodes for which reg_num is
         a node of the WNG and date is between start_date and end_date.
+        :param dict temporal_filtering: {'start_date': start_date, 'end_date': end_date}
         """
         nodes_to_keep = []
         for node in self.fwg.nodes:
             is_node_in_subgraph = node[0] in self.wng_subgraph.nodes
             is_date_between_bounds = (
-                    self.temporal_filtering['start_date'] <= node[1] <= self.temporal_filtering['end_date'])
+                    temporal_filtering['start_date'] <= node[1] <= temporal_filtering['end_date'])
 
             if is_node_in_subgraph and is_date_between_bounds:
                 nodes_to_keep.append(node)
