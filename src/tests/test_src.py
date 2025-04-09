@@ -90,7 +90,7 @@ def test_path_selector():
     }
 
     ddl = DataDownloader(
-        folder_link='https://drive.google.com/drive/folders/1XDQmvYwXSjqXgLu6wZjbxR8ugCSi3Sy5',
+        folder_link='https://drive.google.com/drive/folders/1CzKFN06mQaku1db9e_zv05JCc4x--NKW?usp=drive_link',
         data_folder_path=None
     )
 
