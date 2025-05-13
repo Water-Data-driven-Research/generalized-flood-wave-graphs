@@ -345,6 +345,17 @@ def test_flood_wave_selection_by_duration():
 
 
 def test_flood_wave_analyser():
+    ddl = DataDownloader(
+        folder_link='https://drive.google.com/drive/folders/1CzKFN06mQaku1db9e_zv05JCc4x--NKW?usp=drive_link',
+        data_folder_path=None
+    )
+
+    dl = DataLoader(
+        data_folder_path=ddl.data_folder_path
+    )
+
+    data_handler = DataHandler(dl=dl)
+
     flood_waves = [
         [('1514', '2016-02-01', -52), ('1515', '2016-02-02', 64),
          ('1516', '2016-02-02', 182), ('171517', '2016-02-05', 161),
@@ -357,7 +368,7 @@ def test_flood_wave_analyser():
          ('1516', '2016-02-13', 227)]
     ]
 
-    expected_spatial_lengths = [6, 4, 3, 3]
+    expected_distances = [151.2, 93.5, 59.8, 59.8]
     expected_durations = [6, 1, 1, 1]
 
     extractor_if = FloodWaveExtractorInterface()
@@ -365,10 +376,14 @@ def test_flood_wave_analyser():
 
     analyser = FloodWaveAnalyser(
         extractor_if=extractor_if,
+        data_if=data_handler.data_if,
         is_equivalence_applied=True
     )
     analyser.run()
 
-    assert analyser.spatial_lengths == expected_spatial_lengths, 'Spatial lengths do not match.'
+    rounded_dist_result = [round(x, 1) for x in analyser.distances]
+    rounded_dist_expected = [round(x, 1) for x in expected_distances]
+
+    assert rounded_dist_result == rounded_dist_expected, 'Distances do not match.'
 
     assert analyser.durations == expected_durations, 'Durations do not match.'
