@@ -17,6 +17,7 @@ class DataInterface:
         - 'river_station_mapping'
         - 'station_river_mapping'
         - 'river_connections'
+        - 'reg_rkm_mapping'
         """
         self.time_series_data = pd.DataFrame()
         self.reg_station_mapping = dict()
@@ -25,6 +26,7 @@ class DataInterface:
         self.river_station_mapping = dict()
         self.station_river_mapping = dict()
         self.river_connections = dict()
+        self.reg_rkm_mapping = dict()
 
         if data is not None:
             for key, value in data.items():
