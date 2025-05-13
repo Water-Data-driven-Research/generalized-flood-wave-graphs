@@ -37,7 +37,7 @@ class DataLoader:
 
         self.meta_data = pd.read_csv(
             os.path.join(self.data_folder_path, meta_file_name),
-            index_col=[5]
+            index_col=[6]
         )
         self.meta_data.index = self.meta_data.index.map(str)
 
