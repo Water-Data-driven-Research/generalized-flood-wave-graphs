@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 from src.analysis.static.flood_wave_extractor_interface import FloodWaveExtractorInterface
+from src.data_handling.data_interface import DataInterface
 from src.data_handling.generated_dataloader import GeneratedDataLoader
 
 
@@ -12,9 +13,11 @@ class FloodWaveAnalyser:
     Class for analysing flood waves.
     """
     def __init__(self, extractor_if: FloodWaveExtractorInterface,
+                 data_if: DataInterface,
                  is_equivalence_applied: bool,
                  do_save_results: bool = False, data_folder_path: str = None):
         self.flood_waves = extractor_if.flood_waves
+        self.reg_rkm_mapping = data_if.reg_rkm_mapping
         self.is_equivalence_applied = is_equivalence_applied
         self.do_save_results = do_save_results
         self.data_folder_path = data_folder_path
@@ -25,23 +28,23 @@ class FloodWaveAnalyser:
         else:
             self.flood_waves_to_analyse = [wave for paths in self.flood_waves for wave in paths]
 
-        self.spatial_lengths = []
+        self.distances = []
         self.durations = []
         self.statistical_results = {}
 
     def run(self) -> dict:
         """
-        Run function. Gets the number of flood waves total, gets spatial and temporal lengths
+        Run function. Gets the number of flood waves total, gets distances and durations
         of flood waves. Optionally saves results.
         :return dict: dictionary containing the results
         """
         number_of_flood_waves = len(self.flood_waves_to_analyse)
-        self.spatial_lengths = self.get_spatial_lengths()
+        self.distances = self.get_distances()
         self.durations = self.get_durations()
 
         self.statistical_results = {
             'number_of_flood_waves': number_of_flood_waves,
-            'spatial_statistics': self.get_statistics(data=np.array(self.spatial_lengths)),
+            'spatial_statistics': self.get_statistics(data=np.array(self.distances)),
             'temporal_statistics': self.get_statistics(data=np.array(self.durations))
         }
 
@@ -50,16 +53,19 @@ class FloodWaveAnalyser:
 
         return self.statistical_results
 
-    def get_spatial_lengths(self) -> list:
+    def get_distances(self) -> list:
         """
-        Collects spatial lengths of all flood waves in a list.
-        :return list: spatial lengths of all flood waves
+        Collects distances of all flood waves in a list.
+        :return list: distances of all flood waves
         """
-        spatial_lengths = []
+        distances = []
         for wave in self.flood_waves_to_analyse:
-            spatial_lengths.append(len(wave))
+            start_station = wave[0][0]
+            end_station = wave[-1][0]
+            distance = self.reg_rkm_mapping[start_station] - self.reg_rkm_mapping[end_station]
+            distances.append(distance)
 
-        return spatial_lengths
+        return distances
 
     def get_durations(self) -> list:
         """
@@ -79,14 +85,14 @@ class FloodWaveAnalyser:
     def get_statistics(data: np.ndarray) -> dict:
         """
         Gathers basic statistics of some numerical data.
-        :param np.array data: spatial or temporal lengths
+        :param np.array data: distances or durations
         :return dict: dictionary of basic statistics
         """
         stats = {
             'mean': float(np.mean(data)),
             'median': float(np.median(data)),
-            'max': int(np.max(data)),
-            'min': int(np.min(data))
+            'max': float(np.max(data)),
+            'min': float(np.min(data))
         }
 
         return stats
@@ -95,10 +101,10 @@ class FloodWaveAnalyser:
         """
         Saves results into the desired folder.
         """
-        lengths_and_durations = np.array([self.spatial_lengths, self.durations]).T
+        lengths_and_durations = np.array([self.distances, self.durations]).T
         df = pd.DataFrame(
             data=lengths_and_durations,
-            columns=['spatial_lengths', 'durations'],
+            columns=['distances', 'durations'],
             index=range(len(lengths_and_durations))
         )
 
