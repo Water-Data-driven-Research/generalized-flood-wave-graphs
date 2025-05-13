@@ -33,6 +33,8 @@ class DataHandler:
         like {"close_beginning": 0, "close_ending": 2275} (if the river has to be closed
         with station 2275)
 
+        - reg_rkm_mapping: Dictionary: keys are reg-numbers, values are relative river kilometres
+
         :param DataLoader dl: a DataLoader instance
         """
 
@@ -57,7 +59,8 @@ class DataHandler:
                 reg_station_mapping=reg_station_mapping_dict,
                 river_station_mapping=river_station_mapping_dict
             ),
-            'river_connections': dl.river_connections
+            'river_connections': dl.river_connections,
+            'reg_rkm_mapping': dict(dl.meta_data['rkm_relative'])
         }
 
         self.data_if = DataInterface(data=data)
