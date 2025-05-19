@@ -6,4 +6,6 @@ The packages used during development, along with their appropriate version numbe
 
 Google Drive folder containing all necessary data: https://drive.google.com/drive/folders/1CzKFN06mQaku1db9e_zv05JCc4x--NKW?usp=drive_link
 
-Google Colab notebook: https://colab.research.google.com/drive/1ZRWz4JdB5pmvBBeizvQEubii39r7JMpM#scrollTo=-646Ems6GwkN
+Analysis notebook: https://colab.research.google.com/drive/1ZRWz4JdB5pmvBBeizvQEubii39r7JMpM#scrollTo=-646Ems6GwkN
+
+Interactive plot notebook: https://colab.research.google.com/drive/11RsaDPHN6wPmOf_TqN-RrQbGPa4h6snG#scrollTo=q8jnjxoG-zXR
